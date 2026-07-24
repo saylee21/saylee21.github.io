@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A Complete Guide to Building E2EE Chat in Flutter with the Matrix SDK — Saylee Bharsakle</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: #fff;
+      color: #111;
+      font-size: 16px;
+      line-height: 1.75;
+      padding: 0 24px;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 64px 0 96px;
+    }
+
+    /* Navigation */
+    nav {
+      margin-bottom: 64px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    nav a {
+      font-size: 14px;
+      color: #888;
+      text-decoration: none;
+    }
+    nav a:hover { color: #111; }
+    nav .back { font-weight: 500; }
+
+    /* Header */
+    .article-header {
+      margin-bottom: 56px;
+    }
+    .article-header .series {
+      font-size: 13px;
+      font-weight: 600;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+    .article-header .series a {
+      color: #888;
+      text-decoration: none;
+    }
+    .article-header .series a:hover { color: #111; }
+    .article-header h1 {
+      font-size: 36px;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 16px;
+      letter-spacing: -0.5px;
+    }
+    .article-header .meta {
+      font-size: 14px;
+      color: #888;
+    }
+    .article-header .meta span { margin-right: 16px; }
+
+    /* Series nav */
+    .series-nav {
+      background: #f8f8f8;
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin-bottom: 48px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .series-nav .label {
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #888;
+      margin-bottom: 8px;
+    }
+    .series-nav ul {
+      list-style: none;
+      padding: 0;
+    }
+    .series-nav ul li {
+      padding: 4px 0;
+      color: #555;
+    }
+    .series-nav ul li a { color: #111; }
+    .series-nav ul li.current { font-weight: 600; color: #111; }
+    .series-nav ul li.unpublished { color: #bbb; }
+
+    /* Typography */
+    h2 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-top: 48px;
+      margin-bottom: 16px;
+      letter-spacing: -0.3px;
+    }
+    h3 {
+      font-size: 19px;
+      font-weight: 600;
+      margin-top: 32px;
+      margin-bottom: 12px;
+    }
+    h4 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-top: 24px;
+      margin-bottom: 8px;
+    }
+    p {
+      color: #444;
+      margin-bottom: 16px;
+    }
+    p a { color: #111; text-decoration: underline; text-underline-offset: 2px; }
+    p a:hover { color: #555; }
+
+    strong { color: #111; font-weight: 600; }
+
+    ul, ol {
+      color: #444;
+      margin-bottom: 16px;
+      padding-left: 24px;
+    }
+    li { margin-bottom: 6px; }
+
+    /* Blockquote for callouts */
+    blockquote {
+      border-left: 3px solid #ddd;
+      padding: 12px 20px;
+      margin: 24px 0;
+      color: #555;
+      font-size: 15px;
+      background: #fafafa;
+      border-radius: 0 4px 4px 0;
+    }
+    blockquote strong { color: #333; }
+
+    /* Code */
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      background: #f4f4f4;
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: #111;
+    }
+    pre {
+      background: #111;
+      color: #e0e0e0;
+      padding: 20px 24px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 24px 0;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+      color: inherit;
+      font-size: inherit;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 24px 0;
+      font-size: 14px;
+    }
+    th {
+      text-align: left;
+      font-weight: 600;
+      color: #111;
+      border-bottom: 2px solid #ddd;
+      padding: 10px 12px;
+    }
+    td {
+      border-bottom: 1px solid #eee;
+      padding: 10px 12px;
+      color: #444;
+    }
+    tr:last-child td { border-bottom: none; }
+
+    /* Diagram placeholder */
+    .diagram {
+      background: #f8f8f8;
+      border: 2px dashed #ddd;
+      border-radius: 8px;
+      padding: 48px 24px;
+      margin: 32px 0;
+      text-align: center;
+      color: #888;
+      font-size: 14px;
+    }
+    .diagram .label {
+      font-weight: 600;
+      color: #666;
+      margin-bottom: 4px;
+    }
+
+    /* Checklists */
+    .checklist {
+      list-style: none;
+      padding: 0;
+    }
+    .checklist li {
+      padding: 6px 0 6px 28px;
+      position: relative;
+    }
+    .checklist li::before {
+      content: "☐";
+      position: absolute;
+      left: 0;
+      color: #888;
+    }
+
+    /* Limitation cards */
+    .limitation {
+      border: 1px solid #eee;
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin: 20px 0;
+    }
+    .limitation h4 { margin-top: 0; }
+    .limitation .mitigation {
+      font-size: 14px;
+      color: #666;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #eee;
+    }
+
+    /* Divider */
+    hr {
+      border: none;
+      border-top: 1px solid #eee;
+      margin: 56px 0;
+    }
+
+    /* Author footer */
+    .author-footer {
+      background: #f8f8f8;
+      border-radius: 8px;
+      padding: 32px;
+      margin-top: 56px;
+      text-align: center;
+    }
+    .author-footer p { color: #555; margin-bottom: 8px; font-size: 15px; }
+    .author-footer .name { font-weight: 600; color: #111; font-size: 17px; }
+    .author-footer .cta {
+      font-weight: 600;
+      color: #111;
+      font-size: 16px;
+      margin: 16px 0;
+    }
+    .author-footer .links { margin-top: 12px; }
+    .author-footer .links a {
+      color: #888;
+      text-decoration: none;
+      font-size: 14px;
+      margin: 0 10px;
+    }
+    .author-footer .links a:hover { color: #111; }
+
+    @media (max-width: 600px) {
+      .container { padding: 32px 0 64px; }
+      .article-header h1 { font-size: 26px; }
+      nav { flex-direction: column; align-items: flex-start; gap: 8px; }
+      pre { padding: 16px; }
+      table { font-size: 13px; }
+      th, td { padding: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav>
+      <a href="../" class="back">&larr; saylee21.github.io</a>
+      <a href="#contact">writing</a>
+    </nav>
+
+    <div class="article-header">
+      <div class="series">Part of a series on building production real-time communication apps with Flutter and Matrix</div>
+      <h1>A Complete Guide to Building E2EE Chat in Flutter with the Matrix SDK</h1>
+      <div class="meta">
+        <span>July 2026</span>
+        <span>12 min read</span>
+      </div>
+    </div>
+
+    <div class="series-nav">
+      <div class="label">Series</div>
+      <ul>
+        <li><a href="https://medium.com/@sayleebharsakle2001/what-is-the-matrix-sdk-a-flutter-developers-guide-to-real-time-chat-calls-and-more-2900569240a2">What Is the Matrix SDK? A Flutter Developer's Guide</a></li>
+        <li class="current">A Complete Guide to Building E2EE Chat in Flutter with the Matrix SDK</li>
+        <li><a href="https://medium.com/@sayleebharsakle2001/voice-calling-in-flutter-a-complete-implementation-guide-bb515b731877">Voice Calling in Flutter: A Complete Implementation Guide</a></li>
+        <li><a href="https://medium.com/@sayleebharsakle2001/what-is-end-to-end-encrypted-file-sharing-a-full-guide-for-flutter-matrix-62c2f11b82c0">What Is End-to-End Encrypted File Sharing? A Full Guide for Flutter + Matrix</a></li>
+        <li><a href="https://medium.com/@sayleebharsakle2001/video-calling-in-flutter-a-complete-guide-to-webrtc-matrix-d06cba97e091">Video Calling in Flutter. A Complete Guide to WebRTC + Matrix</a></li>
+      </ul>
+    </div>
+
+    <p><strong>Previously in this series:</strong> <a href="https://medium.com/@sayleebharsakle2001/what-is-the-matrix-sdk-a-flutter-developers-guide-to-real-time-chat-calls-and-more-2900569240a2">What Is the Matrix SDK? A Flutter Developer's Guide</a></p>
+
+    <h2>What This Article Covers</h2>
+
+    <ul>
+      <li>The Matrix protocol architecture — where encryption lives in the stack</li>
+      <li>How Olm and Megolm achieve end-to-end encryption: key generation, session establishment, and the full encryption pipeline</li>
+      <li>Setting up <code>matrix-dart-sdk</code> with persistent key storage</li>
+      <li>Building an encrypted chat screen with device trust handling</li>
+      <li>The limitations of Matrix E2EE you must understand before shipping</li>
+    </ul>
+
+    <p><strong>What this article does NOT cover</strong> (reserved for later in the series):</p>
+    <ul>
+      <li>Voice and video calling — <a href="https://medium.com/@sayleebharsakle2001/voice-calling-in-flutter-a-complete-implementation-guide-bb515b731877">next article in the series</a></li>
+      <li>Push notification infrastructure with Sygnal</li>
+      <li>File encryption and attachment handling — <a href="https://medium.com/@sayleebharsakle2001/what-is-end-to-end-encrypted-file-sharing-a-full-guide-for-flutter-matrix-62c2f11b82c0">covered in the file sharing guide</a></li>
+    </ul>
+
+    <p>By the end, you will have a production-grade encrypted chat screen in Flutter, and you will understand exactly what the encryption is doing at every layer.</p>
+
+    <hr />
+
+    <h2>1. The Stack</h2>
+
+    <table>
+      <tr><th>Layer</th><th>Technology</th></tr>
+      <tr><td>Client framework</td><td>Flutter / Dart</td></tr>
+      <tr><td>SDK</td><td><code>matrix-dart-sdk</code> 6.x (<code>package:matrix</code>)</td></tr>
+      <tr><td>Encryption primitives</td><td><code>libolm</code> (Olm/Megolm ratified implementations)</td></tr>
+      <tr><td>Homeserver</td><td>Synapse (reference), Conduit (Rust), or Dendrite (Go)</td></tr>
+      <tr><td>Device push</td><td>FCM / APNs (transport only — your Sygnal gateway controls dispatch)</td></tr>
+      <tr><td>Key storage</td><td>SQLite via <code>ClientDatabase</code> (persisted to device)</td></tr>
+    </table>
+
+    <p>Matrix is not a service. Matrix is an open protocol. You run a homeserver, or you connect to one. The SDK is your client into that protocol — it handles the HTTP/WebSocket sync loop, room state management, and crucially, all Olm/Megolm cryptographic operations at the client layer.</p>
+
+    <hr />
+
+    <h2>2. Architecture Overview</h2>
+
+    <p>In an E2EE room, the homeserver is a dumb relay. It receives encrypted payloads and forwards them. It cannot read the message content. It can still see metadata — room membership, event timestamps, device identifiers. This is a protocol-level constraint, not a bug.</p>
+
+    <div class="diagram">
+      <div class="label">Diagram 1: Architecture &amp; sync flow</div>
+      <p>Insert diagram showing the client-side SDK layers (Client → Room → OlmEngine → Database) connected via HTTPS/WS to a Synapse homeserver, with encrypted payloads flowing through.</p>
+    </div>
+
+    <p>The SDK maintains a persistent sync connection to the homeserver via a long-polling WebSocket. Every time the server has new events, it pushes them to the client. The SDK processes each event: if it is encrypted, it routes to the Olm/Megolm engine for decryption before any event stream emits.</p>
+
+    <pre><code>Sync loop (simplified):
+
+  Client → GET /_matrix/client/v3/sync (long poll)
+  Server → { rooms: { join: { !room:server: { timeline: { events: [...] } } } } }
+  SDK    → Filter events by type
+         → If m.room.encrypted → decrypt via Olm/Megolm
+         → Parse decrypted content
+         → Emit through onTimelineEvent stream
+         → UI re-renders</code></pre>
+
+    <hr />
+
+    <h2>3. End-to-End Encryption in Matrix — The Full Mechanics</h2>
+
+    <p>This section is the core of the article. If you read nothing else, read this.</p>
+
+    <h3>3.1 Two Algorithms, Two Jobs</h3>
+
+    <p>Matrix E2EE uses two separate cryptographic ratchets, each with a distinct purpose.</p>
+
+    <h4>Olm — One-to-One Double Ratchet</h4>
+
+    <p>Olm is a port of the Signal double-ratchet algorithm to the Matrix ecosystem. It provides:</p>
+    <ul>
+      <li><strong>Forward secrecy:</strong> if a device is compromised, past messages cannot be decrypted.</li>
+      <li><strong>Future secrecy</strong> (also called self-healing): if a device is compromised and later recovers, future messages become secure again.</li>
+    </ul>
+
+    <p>Olm is used exclusively for:</p>
+    <ul>
+      <li>Key exchange (initial session establishment)</li>
+      <li>Direct messages between two devices</li>
+      <li>Sharing Megolm session keys</li>
+    </ul>
+
+    <p>Every Olm session is between exactly two <em>devices</em> (not two users). If Alice has a phone and a laptop, and Bob has a phone, the SDK establishes three Olm sessions: Alice-phone ↔ Bob-phone, Alice-laptop ↔ Bob-phone, and Alice-phone ↔ Alice-laptop (for self-verification).</p>
+
+    <pre><code>Olm session establishment:
+
+  1. Alice's device generates a Curve25519 key pair + Ed25519 signing key
+  2. Alice publishes these as device keys via /keys/upload
+  3. Bob's device downloads Alice's device keys via /keys/query
+  4. Bob creates an Olm session: his private key + Alice's public key
+  5. Bob sends a pre-key Olm message (wrapped in m.room.encrypted)
+  6. Alice receives it, establishes the session on her side
+  7. Both devices now share a symmetric ratchet for one-to-one messaging</code></pre>
+
+    <h4>Megolm — Group Ratchet</h4>
+
+    <p>Megolm is a single-direction ratchet designed for group communication. It makes a deliberate tradeoff:</p>
+
+    <table>
+      <tr><th>Property</th><th>Olm</th><th>Megolm</th></tr>
+      <tr><td>Participants</td><td>2 devices</td><td>N devices in a room</td></tr>
+      <tr><td>Forward secrecy</td><td>Yes</td><td><strong>No</strong> — one leaked key decrypts all past messages</td></tr>
+      <tr><td>Future secrecy</td><td>Yes</td><td>Partial — new session on membership changes</td></tr>
+      <tr><td>Performance overhead</td><td>Per-recipient encryption</td><td>Single encryption, key shared to all</td></tr>
+      <tr><td>Key rotation</td><td>Every message</td><td>Configurable (default: every 100 messages or every week)</td></tr>
+    </table>
+
+    <p>The tradeoff is explicit and documented by the Matrix team. Megolm sacrifices forward secrecy because encrypting every message N times (once per recipient) does not scale to rooms with hundreds of members. Instead, the SDK encrypts each message once with the Megolm session key, then encrypts the session key itself using each recipient's Olm session.</p>
+
+    <div class="diagram">
+      <div class="label">Diagram 2: Full encryption pipeline</div>
+      <p>Insert diagram showing: plaintext → Megolm ciphertext → Olm-wrapped per-recipient → m.room.encrypted event → homeserver → recipients → unwrap → decrypt → plaintext.</p>
+    </div>
+
+    <pre><code>Message encryption pipeline (group room):
+
+  Plaintext: "Hello, world!"
+
+  Step 1: Megolm encrypt
+    Encrypt plaintext with current Megolm session key
+    (AES-256 + HMAC-SHA256)
+    Result: m.megolm.v1.aes-sha2 ciphertext
+
+  Step 2: Wrap Megolm key per recipient
+    For each device in room:
+      Encrypt Megolm session key with that device's Olm session
+      Result: olm.v1.curve25519-aes-sha2 ciphertext
+
+  Step 3: Assemble m.room.encrypted event
+    {
+      "algorithm": "m.megolm.v1.aes-sha2",
+      "ciphertext": "&lt;megolm encrypted blob&gt;",
+      "session_id": "&lt;current megolm session id&gt;",
+      "sender_key": "&lt;sender's curve25519 key&gt;",
+      "device_id": "&lt;sender's device id&gt;"
+    }
+
+  Step 4: Send to homeserver as POST /rooms/{roomId}/send/m.room.encrypted
+    Server stores and relays. Server cannot decrypt.
+
+  Step 5: Each recipient receives event
+    SDK checks algorithm → m.megolm.v1.aes-sha2
+    Looks up Megolm session by session_id
+    If session key known → decrypt directly
+    If session key unknown → request via /keys/claim (Olm)
+
+  Plaintext: "Hello, world!" ✓</code></pre>
+
+    <h3>3.2 Key Generation and Storage</h3>
+
+    <p>When the SDK initializes for the first time on a device:</p>
+    <ol>
+      <li><strong>Account key generation:</strong> a persistent Ed25519 signing key pair (the identity key) and a Curve25519 key pair are generated and stored in <code>ClientDatabase</code>.</li>
+      <li><strong>Device key upload:</strong> the public halves are uploaded via <code>/keys/upload</code> so other devices can establish Olm sessions.</li>
+      <li><strong>One-time key generation:</strong> a batch of one-time Curve25519 keys (OTKs) is generated and uploaded. Other devices use these to establish Olm sessions without a round-trip. The SDK automatically replenishes OTKs when they run low.</li>
+      <li><strong>Fallback key:</strong> a single fallback Curve25519 key is uploaded as a safety net for when OTKs are exhausted.</li>
+    </ol>
+
+    <div class="diagram">
+      <div class="label">Diagram 3: Key lifecycle</div>
+      <p>Insert diagram showing: first init → generate account keys → upload device + one-time keys → establish Olm sessions → negotiate Megolm sessions → encrypt/decrypt messages → periodic key export.</p>
+    </div>
+
+    <p><strong>Where keys live on disk:</strong></p>
+
+    <pre><code>ClientDatabase (SQLite)
+├── account_data         # Ed25519 identity key, Curve25519 key
+├── olm_sessions         # Established Olm sessions (recipient device → session)
+├── megolm_inbound       # Megolm sessions for rooms the device is in
+├── megolm_outbound      # Current Megolm session for each room
+├── device_keys          # Known device keys for all users in the room
+├── cross_signing        # Cross-signing keys (master, self-signed, user-signing)
+└── trust_state          # Which devices are verified or blocked</code></pre>
+
+    <p><strong>Key persistence is not optional for production.</strong> If the database is lost, the device cannot decrypt past messages (because the Olm sessions that wrapped the Megolm keys are gone). The SDK provides <code>exportKeys()</code> and <code>importKeys()</code> for backup — call them periodically and let the user store the file.</p>
+
+    <pre><code>// Export encryption keys for backup
+final exported = await client.exportKeys(
+  password: 'user-provided-passphrase',
+);
+
+// Import on another device or after restore
+await client.importKeys(
+  exported,
+  password: 'user-provided-passphrase',
+);
+
+// Configure persistent database on init
+final client = Client(
+  'MyChatApp',
+  databaseBuilder: (client) => ClientDatabase(
+    'chat_app.db',
+    exportDir: await getApplicationDocumentsDirectory(),
+  ),
+);</code></pre>
+
+    <h3>3.3 Device Trust and Cross-Signing</h3>
+
+    <p>Matrix uses <strong>cross-signing</strong> to establish trust between devices without requiring users to verify every single device manually.</p>
+
+    <pre><code>Master signing key (offline, stored in SDK)
+    ├── Self-signing key (signs user's own devices)
+    │       └── Device A ✓, Device B ✓
+    └── User-signing key (signs other users' masters)
+            └── Bob's master key ✓</code></pre>
+
+    <p>When Alice logs into a new phone: the SDK generates a new device key pair. Alice's existing laptop (already verified) signs the new phone's key using the self-signing key. Other users see the new phone as "verified" because it chains up to Alice's master key.</p>
+
+    <p>If cross-signing is not set up, users must verify each device manually using emoji or number comparison (the <code>m.sas.v1</code> verification flow).</p>
+
+    <pre><code>// Check cross-signing state
+if (!client.crossSigning.isSetup) {
+  await client.crossSigning.setup();
+}
+
+// Verify another user's device
+final userIdentity = client.userIdentity(UserId('@bob:server.com'));
+await userIdentity?.requestVerification();
+
+// Listen for incoming verification requests
+client.onVerificationRequest.stream.listen((request) {
+  // Show emoji comparison dialog
+  // request.accept() or request.reject()
+});</code></pre>
+
+    <p><strong>What happens when an untrusted device exists in a room:</strong> the SDK still encrypts messages for that device (the protocol sends Megolm keys to all devices in the room), but the application can choose to show a warning. The SDK does not block sending — that is an application-layer decision.</p>
+
+    <hr />
+
+    <h2>4. Project Setup</h2>
+
+    <pre><code>dependencies:
+  matrix: ^6.0.0
+  path_provider: ^2.0.0</code></pre>
+
+    <pre><code>import 'package:matrix/matrix.dart';
+import 'package:path_provider/path_provider.dart';
+
+Client createClient() {
+  return Client(
+    'MyChatApp',
+    databaseBuilder: (client) => ClientDatabase(
+      'chat_app.db',
+      exportDir: getApplicationDocumentsDirectory(),
+    ),
+  );
+}</code></pre>
+
+    <p>The <code>databaseBuilder</code> parameter is required for production use. Without it, the SDK operates in memory-only mode — keys are lost when the app process dies, and the device becomes unable to decrypt past messages after restart.</p>
+
+    <hr />
+
+    <h2>5. Authentication</h2>
+
+    <pre><code>Future&lt;void&gt; login(Client client) async {
+  try {
+    final response = await client.login(
+      LoginType.mLoginPassword,
+      password: 'user-password',
+      user: '@user:matrix.org',
+      initialDeviceDisplayName: 'My Phone',
+    );
+  } on MatrixException catch (e) {
+    // e.errorCode: M_FORBIDDEN, M_LIMIT_EXCEEDED, M_UNKNOWN
+    throw e;
+  }
+}
+
+Future&lt;bool&gt; restoreSession(Client client) async {
+  try {
+    await client.checkHomeserver(Uri.parse('https://matrix.org'));
+    await client.restoreLogin(
+      DatabaseApi(
+        'chat_app.db',
+        exportDir: await getApplicationDocumentsDirectory(),
+      ),
+    );
+    return client.isLogged;
+  } on MatrixException {
+    return false; // Token expired — prompt for re-login
+  }
+}</code></pre>
+
+    <p><strong>Device ID management:</strong> on first login, the server assigns a device ID. On subsequent logins, reuse the same device ID to avoid orphaned Olm sessions (other devices have established sessions with the old device ID that will now fail).</p>
+
+    <hr />
+
+    <h2>6. Creating an Encrypted Room</h2>
+
+    <pre><code>Future&lt;Room&gt; createEncryptedDirectRoom(Client client, String userId) async {
+  final room = await client.createRoom(
+    name: 'Direct Chat',
+    invite: [userId],
+    isDirect: true,
+  );
+  // For direct rooms, encryption is enabled automatically
+  return room;
+}
+
+Future&lt;Room&gt; createEncryptedGroupRoom(Client client, List&lt;String&gt; userIds) async {
+  final room = await client.createRoom(
+    name: 'Group Chat',
+    invite: userIds,
+    preset: CreateRoomPreset.privateChat,
+  );
+  // IMPORTANT: enableEncryption() MUST be called before the first
+  // state event is sent to the room. After encryption is enabled,
+  // it cannot be disabled.
+  await room.enableEncryption();
+  return room;
+}</code></pre>
+
+    <blockquote><strong>Warning:</strong> calling <code>enableEncryption()</code> after messages have already been sent creates a partially-unencrypted room. Messages before the <code>m.room.encryption</code> state event are stored as plaintext on the homeserver. The protocol does not allow encryption to be toggled off once enabled.</blockquote>
+
+    <hr />
+
+    <h2>7. Sending Encrypted Messages</h2>
+
+    <p>When you call <code>room.sendTextEvent()</code>, the SDK performs the full encryption pipeline internally:</p>
+
+    <pre><code>Future&lt;void&gt; sendEncryptedMessage(Room room, String text) async {
+  try {
+    // The SDK internally:
+    //   1. Serializes text into m.text content
+    //   2. Encrypts with Megolm outbound session key
+    //   3. Wraps Megolm key per recipient's Olm session
+    //   4. Sends m.room.encrypted event to homeserver
+    await room.sendTextEvent(text);
+  } on MatrixException catch (e) {
+    if (e.errorCode == 'M_TOO_LARGE') {
+      // Message exceeds server limit
+    } else if (e.isRateLimitError) {
+      // Retry with exponential backoff
+    }
+  }
+}</code></pre>
+
+    <p>You do not interact with the crypto layer directly for basic messaging. The SDK exposes it through <code>client.olm</code> if you need low-level access. For 99% of use cases, the high-level <code>Room</code> API is sufficient.</p>
+
+    <p><strong>To verify encryption is working:</strong></p>
+
+    <pre><code>client.onTimelineEvent.stream.listen((event) {
+  if (event.type == EventTypes.Message && event.content != null) {
+    // event.content is the DECRYPTED plaintext
+    // event.originalContent is the raw m.room.encrypted JSON
+    print('Decrypted message from ${event.senderId}: ${event.body}');
+  }
+});</code></pre>
+
+    <p>If decryption fails, <code>event.content</code> is <code>null</code> and <code>event.error</code> is set. Handle this case — show a "decryption failed" indicator rather than silently dropping it.</p>
+
+    <hr />
+
+    <h2>8. The Chat Screen</h2>
+
+    <pre><code>class EncryptedChatScreen extends StatefulWidget {
+  final Room room;
+  const EncryptedChatScreen({required this.room});
+
+  @override
+  State&lt;EncryptedChatScreen&gt; createState() => _EncryptedChatScreenState();
+}
+
+class _EncryptedChatScreenState extends State&lt;EncryptedChatScreen&gt; {
+  late Timeline timeline;
+  final TextEditingController _textController = TextEditingController();
+  StreamSubscription? _timelineSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _initTimeline();
+  }
+
+  Future&lt;void&gt; _initTimeline() async {
+    timeline = await widget.room.getTimeline();
+    _timelineSubscription = timeline.onUpdate.stream.listen((_) {
+      if (mounted) setState(() {});
+    });
+
+    // Listen for decryption failures
+    widget.room.client.onTimelineEvent.stream
+        .where((e) => e.type == EventTypes.Message && e.error != null)
+        .listen((event) {
+      debugPrint('Decryption failure: ${event.error}');
+    });
+  }
+
+  @override
+  void dispose() {
+    _timelineSubscription?.cancel();
+    _textController.dispose();
+    super.dispose();
+  }
+
+  void _sendMessage() {
+    final text = _textController.text.trim();
+    if (text.isEmpty) return;
+    widget.room.sendTextEvent(text);
+    _textController.clear();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Expanded(
+          child: ListView.builder(
+            itemCount: timeline.events.length,
+            itemBuilder: (context, index) {
+              final event = timeline.events[index];
+              if (event.type == EventTypes.Message) {
+                if (event.error != null) {
+                  return _DecryptionFailureTile(event: event);
+                }
+                return _MessageTile(event: event);
+              }
+              return const SizedBox.shrink();
+            },
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _textController,
+                  decoration: const InputDecoration(
+                    hintText: 'Encrypted message...',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.send),
+                onPressed: _sendMessage,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _MessageTile extends StatelessWidget {
+  final Event event;
+  const _MessageTile({required this.event});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: CircleAvatar(
+        child: Text(event.senderId?.characters.first.toUpperCase() ?? '?'),
+      ),
+      title: Text(event.senderId ?? 'Unknown'),
+      subtitle: Text(event.body ?? ''),
+    );
+  }
+}
+
+class _DecryptionFailureTile extends StatelessWidget {
+  final Event event;
+  const _DecryptionFailureTile({required this.event});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: const Icon(Icons.lock, color: Colors.red),
+      title: const Text('Message could not be decrypted'),
+      subtitle: Text(event.error?.toString() ?? 'Unknown error'),
+    );
+  }
+}</code></pre>
+
+    <pre><code>// Usage
+final room = client.getRoomById('!roomid:server.com');
+if (room == null) {
+  // Room not found — join or create
+}
+Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (_) => EncryptedChatScreen(room: room),
+  ),
+);</code></pre>
+
+    <hr />
+
+    <h2>9. Limitations of Matrix E2EE</h2>
+
+    <p>These are not bugs. They are protocol-level tradeoffs that every production Matrix application must account for.</p>
+
+    <div class="limitation">
+      <h4>9.1 Metadata Visibility</h4>
+      <p>The homeserver can see which users are in which rooms, when messages are sent, device identifiers, and event types. It cannot see message content or file content.</p>
+      <div class="mitigation"><strong>Mitigation:</strong> for metadata-sensitive use cases, use the Matrix protocol over Tor or a VPN. Protocol-level metadata hiding is a known gap.</div>
+    </div>
+
+    <div class="limitation">
+      <h4>9.2 Megolm Forward Secrecy</h4>
+      <p>If a Megolm session key is leaked, an attacker can decrypt every message encrypted under that session. Sessions rotate every 100 messages or every 7 days (configurable).</p>
+      <div class="mitigation"><strong>Mitigation:</strong> use Olm for sensitive one-to-one conversations, or configure shorter key rotation intervals.</div>
+    </div>
+
+    <div class="limitation">
+      <h4>9.3 Device Verification Is User-Driven</h4>
+      <p>The protocol provides the mechanism (emoji SAS, QR code, cross-signing), but the application must prompt users. Most users will not verify devices unless the app blocks unverified ones — which causes support tickets.</p>
+      <div class="mitigation"><strong>Mitigation:</strong> show a persistent but non-blocking indicator rather than blocking message sending.</div>
+    </div>
+
+    <div class="limitation">
+      <h4>9.4 Key Loss Is Permanent</h4>
+      <p>If <code>ClientDatabase</code> is deleted and no key export exists, the device cannot decrypt past messages.</p>
+      <div class="mitigation"><strong>Mitigation:</strong> enable server-side key backup via <code>client.keyBackup.ensureBackup()</code> and offer periodic key exports to users.</div>
+    </div>
+
+    <pre><code>// Enable server-side key backup
+if (!client.keyBackup.isActive) {
+  await client.keyBackup.ensureBackup();
+}</code></pre>
+
+    <hr />
+
+    <h2>10. Production Checklist</h2>
+
+    <ul class="checklist">
+      <li>Persistent <code>ClientDatabase</code> configured with a real directory</li>
+      <li><code>client.keyBackup.ensureBackup()</code> called after login</li>
+      <li>Cross-signing set up: <code>client.crossSigning.setup()</code> on any verified device</li>
+      <li><code>enableEncryption()</code> called before any message is sent in group rooms</li>
+      <li>Decryption failure UI handled (not silently dropped)</li>
+      <li>Key export offered to user periodically</li>
+      <li>One-time key replenishment verified (SDK auto-handles, but test on slow networks)</li>
+      <li>Device verification prompt shown at appropriate UX point</li>
+    </ul>
+
+    <hr />
+
+    <h2>11. What's Next</h2>
+
+    <p>This article covered the complete E2EE chat implementation — from the Olm/Megolm encryption pipeline to persistent key management to production considerations.</p>
+
+    <p><strong>Next in the series:</strong></p>
+    <ul>
+      <li><a href="https://medium.com/@sayleebharsakle2001/voice-calling-in-flutter-a-complete-implementation-guide-bb515b731877">Voice Calling in Flutter: A Complete Implementation Guide</a> — adds WebRTC calling using the Matrix SDK's call handling layer</li>
+      <li><a href="https://medium.com/@sayleebharsakle2001/what-is-end-to-end-encrypted-file-sharing-a-full-guide-for-flutter-matrix-62c2f11b82c0">How to Build End-to-End Encrypted File Sharing in Flutter</a> — extends encryption to file attachments with AES-256 per-file keys</li>
+    </ul>
+
+    <!-- Author Footer -->
+    <div class="author-footer" id="contact">
+      <div class="name">Saylee Bharsakle</div>
+      <p>Building production Flutter apps. Writing what I learn.</p>
+      <div class="cta">I'm available for Flutter engineering roles — remote or Bangalore.</div>
+      <p>3 years shipping production apps with Flutter, Matrix, WebRTC, and platform-native code.</p>
+      <div class="links">
+        <a href="https://www.linkedin.com/in/sayleebharsakle/">linkedin</a>
+        <a href="https://github.com/saylee21">github</a>
+        <a href="https://saylee21.github.io">portfolio</a>
+        <a href="mailto:sayleebharsakle2001@gmail.com">email</a>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
