@@ -1,191 +1,252 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Saylee Bharsakle</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Inter', -apple-system, sans-serif;
-      background: #fff;
-      color: #111;
-      font-size: 15px;
-      line-height: 1.65;
-      padding: 0 24px;
-    }
-    .container { max-width: 680px; margin: 0 auto; padding: 80px 0; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saylee Bharsakle — Flutter / Real-Time Systems Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #fcfdfc;
+    --ink: #171d1c;
+    --ink-soft: #4c5652;
+    --ink-faint: #98a19d;
+    --line: #e2e5e2;
+    --accent: #1f6f64;
+    --accent-soft: #e8f0ee;
+    --font-serif: 'Source Serif 4', serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--font-serif);
+    font-size:17px;
+    line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--accent); text-underline-offset:3px; text-decoration-thickness:1px;}
+  a:hover{color:var(--ink);}
+  ::selection{background:var(--accent-soft);}
 
-    nav { margin-bottom: 72px; }
-    nav a {
-      font-size: 14px; color: #888; text-decoration: none;
-      margin-right: 20px;
-    }
-    nav a:hover { color: #111; }
+  .wrap{max-width:760px; margin:0 auto; padding:0 20px;}
 
-    h1 { font-size: 32px; font-weight: 600; margin-bottom: 4px; }
-    .subtitle { font-size: 16px; color: #555; margin-bottom: 28px; }
+  /* floating nav */
+  .nav-outer{
+    position:sticky; top:22px; z-index:50;
+    display:flex; justify-content:center; margin-bottom:0;
+    pointer-events:none;
+  }
+  nav{
+    pointer-events:auto;
+    display:flex; gap:0; background:rgba(252,253,252,0.9);
+    backdrop-filter:blur(6px);
+    border:1px solid var(--line); border-radius:999px;
+    padding:6px 6px; box-shadow:0 2px 10px rgba(23,29,28,0.05);
+  }
+  nav a{
+    font-family:var(--font-mono); font-size:11.5px; letter-spacing:0.03em;
+    text-transform:lowercase; color:var(--ink-soft); text-decoration:none;
+    padding:8px 16px; border-radius:999px; transition:all .15s;
+  }
+  nav a:hover{background:var(--accent-soft); color:var(--accent);}
 
-    p { color: #444; margin-bottom: 16px; max-width: 600px; }
-    p a { color: #111; }
+  /* hero */
+  .hero{padding:96px 0 8px; text-align:center;}
+  .eyebrow{
+    display:inline-block;
+    font-family:var(--font-mono); font-size:11px; letter-spacing:0.14em;
+    text-transform:uppercase; color:var(--accent);
+    border:1px solid var(--line); border-radius:999px;
+    padding:6px 16px; margin-bottom:30px;
+  }
+  h1{
+    font-family:var(--font-serif); font-weight:600;
+    font-size:clamp(38px, 6vw, 50px);
+    letter-spacing:-0.01em; margin-bottom:8px; color:var(--ink);
+  }
+  .role{
+    color:var(--ink-faint); font-size:15px; font-style:italic; margin-bottom:56px;
+  }
 
-    .section { margin: 56px 0; }
-    .section-title {
-      font-size: 13px; font-weight: 600; color: #bbb;
-      text-transform: uppercase; letter-spacing: 1px;
-      margin-bottom: 20px;
-    }
+  /* prose sections */
+  section{padding:0 0 56px; text-align:left;}
+  .divider{border:none; border-top:1px solid var(--line); margin:0 0 56px;}
+  h2{
+    font-family:var(--font-mono); font-size:11.5px; letter-spacing:0.12em;
+    text-transform:uppercase; color:var(--ink-faint); margin-bottom:26px;
+  }
+  p{margin-bottom:20px; color:var(--ink);}
+  p.dim{color:var(--ink-soft);}
 
-    .entry { margin-bottom: 20px; }
-    .entry-title { font-weight: 500; }
-    .entry-title a { color: #111; text-decoration: none; }
-    .entry-title a:hover { text-decoration: underline; }
-    .entry-meta { font-size: 13px; color: #888; }
-    .entry-desc { font-size: 14px; color: #555; margin-top: 2px; }
+  /* project entries as prose, not cards */
+  .entry{margin-bottom:34px;}
+  .entry-head{
+    display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:6px;
+  }
+  .entry-head strong{font-size:18px; font-weight:600;}
+  .entry-client{
+    font-family:var(--font-mono); font-size:11.5px; color:var(--accent);
+  }
+  .entry p{font-size:16px; color:var(--ink-soft); margin-bottom:8px;}
+  .stack{font-family:var(--font-mono); font-size:12px; color:var(--ink-faint);}
 
-    .project-line { margin-bottom: 14px; }
-    .project-line .name { font-weight: 500; }
-    .project-line .desc { color: #555; }
-    .project-line .status { color: #888; font-size: 13px; }
+  /* writing / oss as understated lists */
+  .list-item{
+    padding:14px 0; border-top:1px solid var(--line);
+    display:flex; justify-content:space-between; align-items:baseline; gap:16px; flex-wrap:wrap;
+  }
+  .list-item:first-of-type{border-top:none;}
+  .list-item a{font-weight:500; text-decoration:underline;}
+  .list-meta{font-family:var(--font-mono); font-size:11.5px; color:var(--ink-faint); white-space:nowrap;}
+  .list-desc{width:100%; font-size:14.5px; color:var(--ink-faint); font-family:var(--font-mono); margin-top:2px;}
 
-    hr { border: none; border-top: 1px solid #eee; margin: 56px 0; }
+  .status-tag{
+    font-family:var(--font-mono); font-size:10.5px; color:var(--accent);
+    background:var(--accent-soft); padding:2px 8px; border-radius:4px; white-space:nowrap;
+  }
 
-    .footer-links { margin-top: 8px; }
-    .footer-links a {
-      color: #888; text-decoration: none; font-size: 14px;
-      margin-right: 18px;
-    }
-    .footer-links a:hover { color: #111; }
+  footer{padding:8px 0 88px; text-align:left;}
+  footer p{font-size:16px; color:var(--ink-soft); max-width:480px;}
+  .contact-links{
+    display:flex; flex-wrap:wrap; gap:6px 20px;
+    font-family:var(--font-mono); font-size:13px; margin-top:20px;
+  }
+  .contact-links a{text-decoration:none; color:var(--ink);}
+  .contact-links a:hover{color:var(--accent);}
+  .sign{margin-top:48px; font-family:var(--font-mono); font-size:11px; color:var(--ink-faint);}
 
-    @media (max-width: 600px) {
-      .container { padding: 40px 0; }
-      h1 { font-size: 26px; }
-      nav a { margin-right: 14px; }
-    }
-  </style>
+  @media (max-width:600px){
+    .hero{padding:76px 0 8px;}
+    body{font-size:16px;}
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <nav>
-      <a href="#projects">projects</a>
-      <a href="#oss">oss</a>
-      <a href="#writing">writing</a>
-      <a href="#contact">contact</a>
-    </nav>
 
+<div class="nav-outer">
+  <nav>
+    <a href="#work">work</a>
+    <a href="#oss">oss</a>
+    <a href="#writing">writing</a>
+    <a href="#contact">contact</a>
+  </nav>
+</div>
+
+<div class="wrap">
+
+  <div class="hero">
+    <span class="eyebrow">Flutter · Matrix Protocol · WebRTC</span>
     <h1>Saylee Bharsakle</h1>
-    <div class="subtitle">Flutter engineer</div>
-
-    <p>
-      I build real-time communication apps in Flutter — chat, voice/video calls,
-      screen sharing, call recording, push notifications. I work at the intersection
-      of Flutter and native platform code (Swift, Kotlin) because production apps
-      need both.
-    </p>
-    <p>
-      3 years shipping across hospitality, agritech, insurance, and fintech at
-      iQ Innovations Hub. Built a Matrix + WebRTC communication suite (WebRTC
-      calling, screen recording, custom Sygnal push), an offline-first agri
-      marketplace, and a multi-tenant hotel platform.
-    </p>
-    <p>
-      Recently contributed to the official Matrix Dart SDK — adding a voice/video
-      calling guide that the repository was missing.
-    </p>
-
-    <div class="section" id="projects">
-      <div class="section-title">Projects</div>
-
-      <div class="project-line">
-        <span class="name">Matrix + WebRTC Communication Suite</span>
-        <span class="status">· Shreem Capital</span>
-        <div class="desc">Matrix chat + WebRTC voice/video calls, screen sharing, call recording, E2EE, custom Sygnal push. One of the few production Flutter apps at this depth.</div>
-      </div>
-
-      <div class="project-line">
-        <span class="name">DTP Agri</span>
-        <span class="status">· iQ Innovations Hub</span>
-        <div class="desc">Offline-first farm-to-table marketplace. Isar local DB, background sync, GPS tracking, invoice generation, barcode scanning.</div>
-      </div>
-
-      <div class="project-line">
-        <span class="name">Hotel365</span>
-        <span class="status">· iQ Innovations Hub</span>
-        <div class="desc">Multi-tenant hotel management dashboard. Next.js Server Components, AI briefings, real-time analytics across 15+ modules.</div>
-      </div>
-
-      <div class="project-line">
-        <span class="name">Planet Client</span>
-        <span class="status">· iQ Innovations Hub</span>
-        <div class="desc">Config-driven UI engine — widget factory rendering entirely from API configuration. Zero code changes per tenant.</div>
-      </div>
-    </div>
-
-    <div class="section" id="oss">
-      <div class="section-title">Open Source</div>
-
-      <div class="entry">
-        <div class="entry-title"><a href="https://github.com/famedly/matrix-dart-sdk/pull/2396" target="_blank">matrix-dart-sdk: docs/calling.md</a></div>
-        <div class="entry-meta">PR #2396 · famedly/matrix-dart-sdk</div>
-        <div class="entry-desc">Official voice/video calling guide — WebRTCDelegate, call state machine, flutter_webrtc setup.</div>
-      </div>
-    </div>
-
-    <div class="section" id="writing">
-      <div class="section-title">Writing</div>
-
-      <div class="entry">
-        <div class="entry-title"><a href="https://medium.com/@sayleebharsakle2001/video-calling-in-flutter-a-complete-guide-to-webrtc-matrix-d06cba97e091" target="_blank">Video Calling in Flutter. A Complete Guide to WebRTC + Matrix</a></div>
-        <div class="entry-meta">Medium · Jul 2026</div>
-        <div class="entry-desc">RTCVideoRenderer, camera toggle, Mesh vs LiveKit backend, production checklist.</div>
-      </div>
-
-      <div class="entry">
-        <div class="entry-title"><a href="https://medium.com/@sayleebharsakle2001/what-is-end-to-end-encrypted-file-sharing-a-full-guide-for-flutter-matrix-62c2f11b82c0" target="_blank">What Is End-to-End Encrypted File Sharing? A Full Guide for Flutter + Matrix</a></div>
-        <div class="entry-meta">Medium · Jul 2026</div>
-        <div class="entry-desc">AES-256 per file, Megolm key distribution, progress tracking, rate limits.</div>
-      </div>
-
-      <div class="entry">
-        <div class="entry-title"><a href="https://medium.com/@sayleebharsakle2001/voice-calling-in-flutter-a-complete-implementation-guide-bb515b731877" target="_blank">Voice Calling in Flutter: A Complete Implementation Guide</a></div>
-        <div class="entry-meta">Medium · Jul 2026</div>
-        <div class="entry-desc">WebRTCDelegate, call state machine, TURN server setup, audio routing on iOS.</div>
-      </div>
-
-      <div class="entry">
-        <div class="entry-title"><a href="https://medium.com/@sayleebharsakle2001/what-is-the-matrix-sdk-a-flutter-developers-guide-to-real-time-chat-calls-and-more-2900569240a2" target="_blank">What Is the Matrix SDK? A Flutter Developer's Guide</a></div>
-        <div class="entry-meta">Medium · Jul 2026</div>
-        <div class="entry-desc">Matrix protocol, SDK features, integration approaches, Firebase/WebSocket comparison.</div>
-      </div>
-
-      <div class="entry">
-        <div class="entry-title"><a href="/articles/e2ee-chat-matrix-sdk.html" target="_blank">A Complete Guide to Building E2EE Chat in Flutter with the Matrix SDK</a></div>
-        <div class="entry-meta">GitHub Pages · Jul 2026</div>
-        <div class="entry-desc">Olm/Megolm mechanics, key management, cross-signing, device trust, production checklist. The definitive version.</div>
-      </div>
-
-      <div class="entry">
-        <div class="entry-title"><a href="https://medium.com/@sayleebharsakle2001/every-dashboard-said-success-451069fe59f6" target="_blank">Every Dashboard Said Success: Debugging iOS Push Notifications</a></div>
-        <div class="entry-meta">Medium · Jun 2026</div>
-        <div class="entry-desc">Four stacked bugs, zero errors. A production debugging story.</div>
-      </div>
-    </div>
-
-    <div class="section" id="contact">
-      <div class="section-title">Contact</div>
-      <p>If you're building mobile products and need an engineer who ships across the stack.</p>
-      <div class="footer-links">
-        <a href="mailto:sayleebharsakle2001@gmail.com">email</a>
-        <a href="https://github.com/saylee21" target="_blank">github</a>
-        <a href="https://www.linkedin.com/in/sayleebharsakle/" target="_blank">linkedin</a>
-        <a href="https://medium.com/@sayleebharsakle2001" target="_blank">medium</a>
-      </div>
-    </div>
-
-    <hr />
-    <p style="font-size: 12px; color: #ccc;">saylee bharsakle — building in public</p>
+    <div class="role">mobile &amp; frontend engineer, Pune</div>
   </div>
+
+  <section>
+    <p>I'm Saylee. I build the parts of an app that have to talk in real time — encrypted chat, live calls, screen sharing — the layer most Flutter developers never get asked to touch.</p>
+    <p class="dim">Three years in, most recently at iQ Innovations Hub, I've shipped a full <strong style="color:var(--ink)">Matrix Protocol + WebRTC</strong> communication suite for a US client end to end: E2EE messaging, video/audio calling, screen sharing, and call recording, from a single Flutter codebase across Android, iOS, and Web. Getting it into production meant going past Flutter itself, into 1,000+ lines each of native Swift and Kotlin, to fix platform-level conflicts nobody warns you about — screen recording fighting the WebRTC capture pipeline, iOS silently killing push delivery on background transitions.</p>
+    <p class="dim">Outside of that, I write about the systems I build — Matrix protocol internals, WebRTC calling, encryption — because I've found that explaining a system clearly is usually the last step of actually understanding it.</p>
+  </section>
+
+  <hr class="divider">
+
+  <section id="work">
+    <h2>Work</h2>
+
+    <div class="entry">
+      <div class="entry-head"><strong>Hotel365 Matrix App</strong><span class="entry-client">Shreem Capital, USA</span></div>
+      <p>Secure communication suite — E2EE messaging, WebRTC calling, screen sharing, call recording, self-hosted Sygnal push. The flagship project: a depth of real-time systems work rarely handed to a Flutter developer.</p>
+      <span class="stack">Flutter · Matrix SDK · WebRTC · native Swift/Kotlin</span>
+    </div>
+
+    <div class="entry">
+      <div class="entry-head"><strong>Hotel365 Web</strong><span class="entry-client">iQ Innovations Hub</span></div>
+      <p>15+ dashboard modules for hotel GMs and revenue managers on Next.js App Router with Server Components — multi-tenant, AI-generated daily briefings, Chart.js analytics.</p>
+      <span class="stack">Next.js · TypeScript · Tailwind</span>
+    </div>
+
+    <div class="entry">
+      <div class="entry-head"><strong>Planet Client</strong><span class="entry-client">iQ Innovations Hub</span></div>
+      <p>A config-driven widget factory that renders UI entirely from API configuration — new tenants, zero code changes.</p>
+      <span class="stack">Flutter · BLoC · Hive</span>
+    </div>
+
+    <div class="entry">
+      <div class="entry-head"><strong>DTP Agri</strong><span class="entry-client">iQ Innovations Hub</span></div>
+      <p>B2B agritech platform with role-specific dashboards for farmers, packers, and exporters — MLKit OCR document capture, live GPS tracking, biometric auth.</p>
+      <span class="stack">Flutter · GetX · MLKit OCR</span>
+    </div>
+
+    <div class="entry">
+      <div class="entry-head"><strong>Traverse</strong><span class="entry-client">iQ Innovations Hub</span></div>
+      <p>Social travel app. Independently researched and shipped Unity AR destination previews embedded into Flutter via Method Channels — rarely delivered in production Flutter apps.</p>
+      <span class="stack">Flutter · Unity AR · Mapbox</span>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section id="oss">
+    <h2>Open Source</h2>
+    <div class="list-item">
+      <a href="https://github.com/famedly/matrix-dart-sdk/pull/2396" target="_blank" rel="noopener">famedly/matrix-dart-sdk — calling guide</a>
+      <span class="status-tag">PR open · in review</span>
+      <div class="list-desc">Docs for MatrixRTC, GroupCallSession, MeshBackend/LiveKitBackend, MSC4075 notifications — revised after maintainer review.</div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section id="writing">
+    <h2>Writing</h2>
+    <div class="list-item">
+      <a href="https://saylee21.github.io/articles/e2ee-chat-matrix-sdk.html" target="_blank" rel="noopener">Building E2EE Chat in Flutter with the Matrix SDK</a>
+      <span class="list-meta">long-form</span>
+      <div class="list-desc">Olm/Megolm, key management, cross-signing, device trust</div>
+    </div>
+    <div class="list-item">
+      <a href="https://medium.com/@sayleebharsakle2001/video-calling-in-flutter-a-complete-guide-to-webrtc-matrix-d06cba97e091" target="_blank" rel="noopener">Video Calling in Flutter: WebRTC + Matrix</a>
+      <span class="list-meta">medium</span>
+      <div class="list-desc">RTCVideoRenderer, Mesh vs LiveKit, production checklist</div>
+    </div>
+    <div class="list-item">
+      <a href="https://medium.com/@sayleebharsakle2001/what-is-end-to-end-encrypted-file-sharing-a-full-guide-for-flutter-matrix-62c2f11b82c0" target="_blank" rel="noopener">What Is End-to-End Encrypted File Sharing?</a>
+      <span class="list-meta">medium</span>
+      <div class="list-desc">AES-256 per file, Megolm key distribution, rate limits</div>
+    </div>
+    <div class="list-item">
+      <a href="https://medium.com/@sayleebharsakle2001/voice-calling-in-flutter-a-complete-implementation-guide-bb515b731877" target="_blank" rel="noopener">Voice Calling in Flutter: A Complete Guide</a>
+      <span class="list-meta">medium</span>
+      <div class="list-desc">Call state machine, TURN setup, iOS audio routing</div>
+    </div>
+    <div class="list-item">
+      <a href="https://medium.com/@sayleebharsakle2001/what-is-the-matrix-sdk-a-flutter-developers-guide-to-real-time-chat-calls-and-more-2900569240a2" target="_blank" rel="noopener">What Is the Matrix SDK?</a>
+      <span class="list-meta">medium</span>
+      <div class="list-desc">Protocol, SDK features, integration approaches</div>
+    </div>
+    <div class="list-item">
+      <a href="https://medium.com/@sayleebharsakle2001/every-dashboard-said-success-451069fe59f6" target="_blank" rel="noopener">Every Dashboard Said Success</a>
+      <span class="list-meta">medium</span>
+      <div class="list-desc">A production debugging story — four stacked bugs, zero errors</div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <footer id="contact">
+    <h2>Contact</h2>
+    <p>Building mobile products and need someone who can ship the real-time, encrypted, cross-platform parts? That's what I do — email, or find me on GitHub and LinkedIn.</p>
+    <div class="contact-links">
+      <a href="mailto:sayleebharsakle2001@gmail.com">sayleebharsakle2001@gmail.com</a>
+      <a href="https://github.com/saylee21" target="_blank" rel="noopener">github.com/saylee21</a>
+      <a href="https://www.linkedin.com/in/sayleebharsakle/" target="_blank" rel="noopener">linkedin</a>
+    </div>
+    <div class="sign">Pune, India — building in public.</div>
+  </footer>
+
+</div>
+
 </body>
 </html>
