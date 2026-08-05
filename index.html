@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Saylee Bharsakle — Flutter / Real-Time Systems Engineer</title>
+<title>Saylee Bharsakle — Real-Time Systems & Cross-Platform Engineer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -109,6 +109,13 @@
     background:var(--accent-soft); padding:2px 8px; border-radius:4px; white-space:nowrap;
   }
 
+  /* pull quote / positioning strip */
+  .strip{
+    background:var(--accent-soft); border-radius:12px; padding:28px 32px; margin-bottom:56px;
+  }
+  .strip p{color:var(--ink); font-size:16.5px; margin-bottom:0;}
+  .strip p strong{color:var(--accent);}
+
   footer{padding:8px 0 88px; text-align:left;}
   footer p{font-size:16px; color:var(--ink-soft); max-width:480px;}
   .contact-links{
@@ -122,6 +129,7 @@
   @media (max-width:600px){
     .hero{padding:76px 0 8px;}
     body{font-size:16px;}
+    .strip{padding:22px 20px;}
   }
 </style>
 </head>
@@ -139,16 +147,20 @@
 <div class="wrap">
 
   <div class="hero">
-    <span class="eyebrow">Flutter · Matrix Protocol · WebRTC</span>
+    <span class="eyebrow">Real-Time Systems · Matrix Protocol · WebRTC</span>
     <h1>Saylee Bharsakle</h1>
-    <div class="role">mobile &amp; frontend engineer, Pune</div>
+    <div class="role">software engineer — real-time systems & cross-platform applications, Pune</div>
   </div>
 
   <section>
-    <p>I'm Saylee. I build the parts of an app that have to talk in real time — encrypted chat, live calls, screen sharing — the layer most Flutter developers never get asked to touch.</p>
-    <p class="dim">Three years in, most recently at iQ Innovations Hub, I've shipped a full <strong style="color:var(--ink)">Matrix Protocol + WebRTC</strong> communication suite for a US client end to end: E2EE messaging, video/audio calling, screen sharing, and call recording, from a single Flutter codebase across Android, iOS, and Web. Getting it into production meant going past Flutter itself, into 1,000+ lines each of native Swift and Kotlin, to fix platform-level conflicts nobody warns you about — screen recording fighting the WebRTC capture pipeline, iOS silently killing push delivery on background transitions.</p>
-    <p class="dim">Outside of that, I write about the systems I build — Matrix protocol internals, WebRTC calling, encryption — because I've found that explaining a system clearly is usually the last step of actually understanding it.</p>
+    <p>I build the infrastructure most engineers never get asked to touch — encrypted chat, live calls, screen sharing, the layer that has to work perfectly or not at all. That's the work I go looking for.</p>
+    <p class="dim">Three years in, most recently at iQ Innovations Hub, I architected and delivered a full <strong style="color:var(--ink)">Matrix Protocol + WebRTC</strong> communication suite for a U.S. enterprise client, end to end: E2EE messaging, video/audio calling, screen sharing, and call recording, from a single Flutter codebase across Android, iOS, and Web. Production meant going past Flutter itself — 1,000+ lines each of native Swift and Kotlin — to fix platform-level conflicts nobody warns you about: screen recording fighting the WebRTC capture pipeline, iOS silently killing push delivery on background transitions.</p>
+    <p class="dim">I work directly with client stakeholders, not through a delivery layer — architecture calls through production deployment, across distributed and cross-border teams. And I write about the systems I build, because a system I can explain clearly is one I actually understand.</p>
   </section>
+
+  <div class="strip">
+    <p>Currently taking on <strong>contract and consulting engagements</strong> — real-time communication infrastructure, cross-platform architecture, and technical delivery for teams that need someone who can own a system, not just implement a ticket.</p>
+  </div>
 
   <hr class="divider">
 
@@ -157,8 +169,14 @@
 
     <div class="entry">
       <div class="entry-head"><strong>Hotel365 Matrix App</strong><span class="entry-client">Shreem Capital, USA</span></div>
-      <p>Secure communication suite — E2EE messaging, WebRTC calling, screen sharing, call recording, self-hosted Sygnal push. The flagship project: a depth of real-time systems work rarely handed to a Flutter developer.</p>
+      <p>Secure communication suite — E2EE messaging, WebRTC calling, screen sharing, call recording, self-hosted Sygnal push. The flagship engagement: real-time systems depth rarely handed to a mobile engineer, delivered end to end with direct client ownership.</p>
       <span class="stack">Flutter · Matrix SDK · WebRTC · native Swift/Kotlin</span>
+    </div>
+
+    <div class="entry">
+      <div class="entry-head"><strong>IICS Customer App</strong><span class="entry-client">ARTUS GmbH, Germany</span></div>
+      <p>Insurance self-service portal — claims, contracts, and document management for a European insurer, one codebase across Android, iOS, and Web. WebView OAuth, encrypted token storage, German/English localization.</p>
+      <span class="stack">Flutter · BLoC · dartz · flutter_secure_storage</span>
     </div>
 
     <div class="entry">
@@ -237,7 +255,7 @@
 
   <footer id="contact">
     <h2>Contact</h2>
-    <p>Building mobile products and need someone who can ship the real-time, encrypted, cross-platform parts? That's what I do — email, or find me on GitHub and LinkedIn.</p>
+    <p>If you're building something that needs real-time, encrypted, cross-platform infrastructure done right — that's what I do. Open to full-time, contract, and consulting work.</p>
     <div class="contact-links">
       <a href="mailto:sayleebharsakle2001@gmail.com">sayleebharsakle2001@gmail.com</a>
       <a href="https://github.com/saylee21" target="_blank" rel="noopener">github.com/saylee21</a>
