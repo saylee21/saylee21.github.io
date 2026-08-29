@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Breakdown: ARC-AGI-3 Benchmark — Score 100.00 RHAE by NVIDIA AVO</title>
-<meta name="description" content="How NVIDIA's AVO harness took the exact same Claude Opus 5 model from 30% to 100.00 RHAE on ARC-AGI-3 — and why the system around a model matters as much as the model itself.">
+<meta name="description" content="How NVIDIA's AVO harness took the exact same Claude Opus 5 model from 30% to 100.00 RHAE on ARC-AGI-3 and why the system around a model matters as much as the model itself.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Source+Serif+4:wght@400;500;600&display=swap" rel="stylesheet">
@@ -356,15 +356,15 @@
     <div class="eyebrow">§ 01 · The Hook</div>
     <h2>Same Model, Different Score</h2>
     <p class="lead">NVIDIA scored 100% on the ARC-AGI-3 benchmark with the same model, Claude Opus 5, which standalone scored 30%. So what changed?</p>
-    <p>NVIDIA wrapped a harness — called AVO — around Opus 5, and that's what pushed it to the 100% score. Think of it as Claude Opus being the brain: on its own it scored 30%, but wrapped in the AVO system, the harness in this case scored 100%.</p>
-    <p>It clearly demonstrates that with good system design, we can make outcomes much better — with exactly the same model. So it isn't just the smart model that got the score. It's the smart system around it.</p>
+    <p>NVIDIA wrapped a harness called AVO around Opus 5, and that's what pushed it to the 100% score. Think of it as Claude Opus being the brain: on its own it scored 30%, but wrapped in the AVO system, the harness in this case scored 100%.</p>
+    <p>It clearly demonstrates that with good system design, we can make outcomes much better with exactly the same model. So it isn't just the smart model that got the score. It's the smart system around it.</p>
   </section>
 
   <!-- SECTION 2 -->
   <section class="block" id="problem">
     <div class="eyebrow">§ 02 · The Problem</div>
     <h2>The Blind Spot in the Race</h2>
-    <p>The competition right now is heavily focused on making the smartest model — training with more parameters, more data — while overlooking the other factor that could make it smart and efficient: the harness.</p>
+    <p>The competition right now is heavily focused on making the smartest model, training with more parameters, more data, while overlooking the other factor that could make it smart and efficient: the harness.</p>
     <p>What's the point of making a model super smart while overlooking its efficiency, by not investing in or researching the harness around it?</p>
     <blockquote>A model without a good harness is like a genius with amnesia.</blockquote>
   </section>
@@ -374,7 +374,7 @@
     <div class="eyebrow">§ 03 · Definition</div>
     <h2>What Is a Harness?</h2>
     <p>The surrounding system around the model is often called a harness. It determines how the model receives context, uses tools, maintains state, responds to feedback, recovers from failure, and sustains progress over a long-running task.</p>
-    <p>A harness is an equipment, a control system, strapped around the model. The model comes up with an idea — the harness decides what actually happens.</p>
+    <p>A harness is an equipment, a control system, strapped around the model. The model comes up with an idea, the harness decides what actually happens.</p>
   </section>
 
   <!-- SECTION 4 -->
@@ -433,26 +433,26 @@
 
       <div class="part">
         <div class="part-head"><span class="part-num">II.</span><span class="part-name">Tools</span></div>
-        <p>This is the agent's hands. It's what lets the model perform actions — read code, edit it, run commands, look up documentation, test whether something works. Without tools, the model can only think. It can't act. And a model that can't act is just a very expensive idea machine.</p>
-        <div class="example"><b>Example —</b> a coding agent with file-editing and terminal tools can open a project, change the code, and run the tests. The same model without those tools can only describe what you should change — it can't do it.</div>
+        <p>This is the agent's hands. It's what lets the model perform actions, read code, edit it, run commands, look up documentation, test whether something works. Without tools, the model can only think. It can't act. And a model that can't act is just a very expensive idea machine.</p>
+        <div class="example"><b>Example —</b> a coding agent with file-editing and terminal tools can open a project, change the code, and run the tests. The same model without those tools can only describe what you should change, it can't do it.</div>
       </div>
 
       <div class="part">
         <div class="part-head"><span class="part-num">III.</span><span class="part-name">Feedback</span></div>
-        <p>This is the agent's reality check. After the model does something, feedback tells it: did that work, or not? Without it, the model is guessing in the dark — it has no idea if its action actually helped or hurt. Feedback grounds the agent in what's really happening, not just what it thinks is happening.</p>
-        <div class="example"><b>Example —</b> an agent writes some code and runs the tests. They fail with an error. That error is feedback — it tells the agent exactly what to fix. Without feedback, the agent would just assume its code worked and move on.</div>
+        <p>This is the agent's reality check. After the model does something, feedback tells it: did that work, or not? Without it, the model is guessing in the dark, it has no idea if its action actually helped or hurt. Feedback grounds the agent in what's really happening, not just what it thinks is happening.</p>
+        <div class="example"><b>Example —</b> an agent writes some code and runs the tests. They fail with an error. That error is feedback it tells the agent exactly what to fix. Without feedback, the agent would just assume its code worked and move on.</div>
       </div>
 
       <div class="part">
         <div class="part-head"><span class="part-num">IV.</span><span class="part-name">Recovery</span></div>
-        <p>This is the agent's ability to get back up. Most AI systems just stop the moment they hit one mistake — one error and it's game over. Recovery lets the agent keep going even after it fails. It doesn't freeze; it adapts and tries again. Without this, a single wrong move ends the whole task.</p>
-        <div class="example"><b>Example —</b> an agent makes an API call that returns a bad response. Without recovery, it crashes. With recovery, it reads the error, fixes its request, and retries — maybe it keeps going until it succeeds.</div>
+        <p>This is the agent's ability to get back up. Most AI systems just stop the moment they hit one mistake, one error and it's game over. Recovery lets the agent keep going even after it fails. It doesn't freeze; it adapts and tries again. Without this, a single wrong move ends the whole task.</p>
+        <div class="example"><b>Example —</b> an agent makes an API call that returns a bad response. Without recovery, it crashes. With recovery, it reads the error, fixes its request, and retries, maybe it keeps going until it succeeds.</div>
       </div>
 
       <div class="part">
         <div class="part-head"><span class="part-num">V.</span><span class="part-name">Supervisor</span></div>
-        <p>This is a program — not a human, not a smarter model — that watches the agent's overall progress. It catches two specific problems: when the agent runs out of ideas in its current direction, or when it keeps making edits that don't improve anything. When that happens, it reviews everything and points the agent at new directions. NVIDIA's engineer described it as acting "like a CEO to nudge the agent when it goes off direction." Without it, AVO would spin in a dead end forever.</p>
-        <div class="example"><b>Example —</b> an agent trying to fix a bug keeps re-running the same test that's failing the same way. The supervisor sees it's going in circles, and tells it to check the config file instead — a direction the agent hadn't thought of.</div>
+        <p>This is a program not a human, not a smarter model that watches the agent's overall progress. It catches two specific problems: when the agent runs out of ideas in its current direction, or when it keeps making edits that don't improve anything. When that happens, it reviews everything and points the agent at new directions. NVIDIA's engineer described it as acting "like a CEO to nudge the agent when it goes off direction." Without it, AVO would spin in a dead end forever.</p>
+        <div class="example"><b>Example —</b> an agent trying to fix a bug keeps re-running the same test that's failing the same way. The supervisor sees it's going in circles, and tells it to check the config file instead, a direction the agent hadn't thought of.</div>
       </div>
     </div>
   </section>
@@ -461,10 +461,10 @@
   <section class="block" id="nvidias-proof">
     <div class="eyebrow">§ 05 · Case Study</div>
     <h2>NVIDIA's Proof: GPU-Kernel Optimization</h2>
-    <p class="lead">Let's start by understanding AVO. It's a general-purpose coding system developed by NVIDIA — you can call it NVIDIA's version of the harness. It keeps the model working autonomously.</p>
+    <p class="lead">Let's start by understanding AVO. It's a general-purpose coding system developed by NVIDIA, you can call it NVIDIA's version of the harness. It keeps the model working autonomously.</p>
     <p>Like a coding agent, it can read code, edit it, run commands, look up docs, and test whether the code actually works. What makes AVO different is that it can keep working on its own for a long time, without a human directing every step.</p>
-    <p>NVIDIA tested AVO on GPU optimization — specifically GPU-kernel optimization, making computer processes run faster. Normally, evolutionary search has a human or algorithm deciding each tweak. AVO replaced that human step with an autonomous system that decides what to change, what to test, what to commit.</p>
-    <p>The harness used here was the same one used for the ARC-AGI-3 benchmark. In fact, the same model was used — what changed was only the controls, the tools.</p>
+    <p>NVIDIA tested AVO on GPU optimization specifically GPU-kernel optimization, making computer processes run faster. Normally, evolutionary search has a human or algorithm deciding each tweak. AVO replaced that human step with an autonomous system that decides what to change, what to test, what to commit.</p>
+    <p>The harness used here was the same one used for the ARC-AGI-3 benchmark. In fact, the same model was used, what changed was only the controls, the tools.</p>
 
     <h3>The AVO Architecture</h3>
     <div class="diagram-panel">
@@ -516,11 +516,11 @@
       <div class="diagram-caption"><span class="fig">Fig. 2</span> — The main agent cycles through plan, implement, and evaluate, drawing on persistent memory and tools. The supervisor sits above the loop, watching the broader search trajectory and intervening when the agent stalls.</div>
     </div>
 
-    <p>In the GPU-kernel optimization experiment, AVO operated on the task continuously for seven days. It explored more than 500 optimization directions and produced 40 committed kernel versions (improvements). This is long-horizon work in action — days of it — and the results spoke for themselves: it beat two industry-standard optimization libraries, cuDNN by 3.5% and FlashAttention-4 by 10.5%, both of which are already highly tuned.</p>
-    <p>The agent subsequently took a task that normally needs human re-engineering, and reapplied its learning to a new variant in half an hour, all on its own — without human supervision.</p>
+    <p>In the GPU-kernel optimization experiment, AVO operated on the task continuously for seven days. It explored more than 500 optimization directions and produced 40 committed kernel versions (improvements). This is long-horizon work in action days of it and the results spoke for themselves: it beat two industry-standard optimization libraries, cuDNN by 3.5% and FlashAttention-4 by 10.5%, both of which are already highly tuned.</p>
+    <p>The agent subsequently took a task that normally needs human re-engineering, and reapplied its learning to a new variant in half an hour, all on its own without human supervision.</p>
 
     <h3>What Makes This Long Work Credible</h3>
-    <p><b style="color:var(--ink)">Persistent memory</b> carries forward the prior implementation, like an agent's notebook. It remembers what it has tried, what broke, and what worked, so it doesn't have to start from zero over time — it allows the agent to resume from its current state rather than repeatedly reconstructing the search.</p>
+    <p><b style="color:var(--ink)">Persistent memory</b> carries forward the prior implementation, like an agent's notebook. It remembers what it has tried, what broke, and what worked, so it doesn't have to start from zero over time it allows the agent to resume from its current state rather than repeatedly reconstructing the search.</p>
     <p><b style="color:var(--ink)">The supervisor</b> acted like a coach, monitoring the overall workflow and redirecting the agent toward alternate strategies when required. During this seven-day run, the main agent was responsible for deciding, inspecting, editing, testing, and evaluating, while the supervisor maintained forward progress.</p>
   </section>
 
@@ -531,34 +531,34 @@
 
     <h3>What Is ARC-AGI-3?</h3>
     <p>As mentioned earlier, NVIDIA took the same AVO system and applied it to the ARC-AGI-3 benchmark.</p>
-    <p>ARC-AGI-3 could be explained in very simple terms as a video game where you're dropped in with zero instructions. No tutorial, no rulebook, no stated goal. You're just given an environment, and you have to figure out — purely by interacting with it — what the controls do, what counts as progress, and what you're even trying to achieve. Every action you take is a probe: you nudge something, watch what changes, and slowly build a mental model of the rules from scratch. The environments themselves aren't reused either — each one is novel, so there's no memorizing a walkthrough. The agent has to relearn the rules of the world every single time it's dropped into a new one. That's what makes it a genuinely hard benchmark: it isn't testing whether the model knows things, it's testing whether the model can figure things out.</p>
+    <p>ARC-AGI-3 could be explained in very simple terms as a video game where you're dropped in with zero instructions. No tutorial, no rulebook, no stated goal. You're just given an environment, and you have to figure out purely by interacting with it, what the controls do, what counts as progress, and what you're even trying to achieve. Every action you take is a probe: you nudge something, watch what changes, and slowly build a mental model of the rules from scratch. The environments themselves aren't reused either, each one is novel, so there's no memorizing a walkthrough. The agent has to relearn the rules of the world every single time it's dropped into a new one. That's what makes it a genuinely hard benchmark: it isn't testing whether the model knows things, it's testing whether the model can figure things out.</p>
 
     <h3>The Score</h3>
     <p>The AVO system scored <b style="color:var(--ink)">100.00 RHAE</b>, a perfect score across all 25 environments of the public set, completing all 183 levels.</p>
 
     <div class="defn">
       <span class="term">RHAE <span class="expand">— Relative Human Action Efficiency</span></span>
-      <p>The scoring metric ARC-AGI-3 actually runs on. It doesn't just check whether a level got solved — it combines task completion with per-level action efficiency, measured against first-time human baselines, then aggregates across levels and environments. So "100.00 RHAE" means: every level solved, at a pace that matches or beats how efficiently a human sees it for the first time.</p>
+      <p>The scoring metric ARC-AGI-3 actually runs on. It doesn't just check whether a level got solved, it combines task completion with per-level action efficiency, measured against first-time human baselines, then aggregates across levels and environments. So "100.00 RHAE" means: every level solved, at a pace that matches or beats how efficiently a human sees it for the first time.</p>
     </div>
 
     <p>This demonstrated that evaluating the model is not the same as evaluating an agent. The model matters, but the harness determines how it performs over a long task.</p>
 
     <h3>What AVO Did Differently</h3>
     <p>There were two other systems, Tycho and VISTA, also trying to beat the benchmark. Tycho built an explicit inner "world model," while VISTA interacts directly with the environment, with no inner model at all.</p>
-    <p>AVO chose VISTA's direct-interaction style, but built its own interface. VISTA uses Claude Opus 5 through Claude Code, or GPT-5.6 Sol through Codex, as its harness — AVO uses its own.</p>
-    <p>The observation interface also differed. VISTA relied on images — it rendered a 512×512 PNG — while AVO gave the model text only: a 64×64 grid of characters describing the game screen. AVO never saw a picture; it only ever read the text description.</p>
+    <p>AVO chose VISTA's direct-interaction style, but built its own interface. VISTA uses Claude Opus 5 through Claude Code, or GPT-5.6 Sol through Codex, as its harness AVO uses its own.</p>
+    <p>The observation interface also differed. VISTA relied on images, it rendered a 512×512 PNG, while AVO gave the model text only: a 64×64 grid of characters describing the game screen. AVO never saw a picture; it only ever read the text description.</p>
 
     <h3>The Result</h3>
-    <p>AVO, running Claude Opus 5, completed the full 25-environment public set with a 100.00 RHAE score, solving all 183 levels in 6,624 environment actions. For reference, VISTA reports 7,542 environment actions with the same Claude Opus 5 — AVO took roughly 12% fewer.</p>
+    <p>AVO, running Claude Opus 5, completed the full 25-environment public set with a 100.00 RHAE score, solving all 183 levels in 6,624 environment actions. For reference, VISTA reports 7,542 environment actions with the same Claude Opus 5 AVO took roughly 12% fewer.</p>
 
-    <p>If we run the cross-system comparison, AVO looks a little more efficient — but both systems differ in agent backend, observation representation, memory, context management, and other implementation details, so the difference shouldn't be treated as a controlled ablation.</p>
+    <p>If we run the cross-system comparison, AVO looks a little more efficient but both systems differ in agent backend, observation representation, memory, context management, and other implementation details, so the difference shouldn't be treated as a controlled ablation.</p>
 
     <h3>The Honest Caveats</h3>
-    <p>ARC reports approximately 30% for Claude Opus at high reasoning effort. NVIDIA's experiment ran the same model under a different reasoning setting, and a substantially different agent system and evaluation setup. So it isn't correct to call 30% to 100% a clean experiment — that 30% figure was standalone Opus 5, measured under a different setting, and we can't say AVO "added" 70 points. It isn't a precise way to measure the gain. It just demonstrates the change the harness made.</p>
+    <p>ARC reports approximately 30% for Claude Opus at high reasoning effort. NVIDIA's experiment ran the same model under a different reasoning setting, and a substantially different agent system and evaluation setup. So it isn't correct to call 30% to 100% a clean experiment, that 30% figure was standalone Opus 5, measured under a different setting, and we can't say AVO "added" 70 points. It isn't a precise way to measure the gain. It just demonstrates the change the harness made.</p>
     <p>The same ARC-AGI-3 experiment was also run with a different model, GPT-5.6 Sol, by NVIDIA. The result: Sol cleared levels faster in several cases than Opus 5, but Opus used fewer environment actions.</p>
     <div class="note-box">
       <span class="tag">Important —</span>
-      <p>The 100% score is only on the public practice set — the one everyone can see and deliberately train and practice on — not the semi-private or fully private sets, the ones that officially count for judging.</p>
+      <p>The 100% score is only on the public practice set, the one everyone can see and deliberately train and practice on not the semi-private or fully private sets, the ones that officially count for judging.</p>
     </div>
   </section>
 
@@ -607,24 +607,24 @@
     </div>
 
     <p>They first build a hypothesis from incomplete evidence, act, observe the consequences, preserve useful state, then revise the model, remove incorrect assumptions, and keep repeating this over the entirety of the long task.</p>
-    <p>The value of AVO doesn't lie in knowing something domain-specific, like GPU coding. It lies in its machinery — the part that can make progress across any domain.</p>
+    <p>The value of AVO doesn't lie in knowing something domain-specific, like GPU coding. It lies in its machinery, the part that can make progress across any domain.</p>
   </section>
 
   <!-- CONCLUSION -->
   <section class="block" id="conclusion">
     <div class="eyebrow">§ 08 · Closing</div>
     <h2>The Takeaway</h2>
-    <p class="lead">The race right now is all about building the next best model — more parameters, more training data — with little focus on the factor that could make AI more effective without needing to be bigger: the harness.</p>
+    <p class="lead">The race right now is all about building the next best model, more parameters, more training data, with little focus on the factor that could make AI more effective without needing to be bigger: the harness.</p>
     <p>NVIDIA's AVO experiment showed us three things:</p>
 
     <ul class="three-things">
       <li data-n="I."><b>The harness contributes just as much to a model's effective intelligence as the model itself.</b> Same brain, radically different outcome, depending on the system wrapped around it.</li>
-      <li data-n="II."><b>The same AVO architecture transfers across domains.</b> The agent doesn't need to be task-specific — one architecture handled GPU-kernel optimization and ARC-AGI-3 puzzle-solving equally well. It's not about knowing one domain deeply; it's about having machinery that generalizes.</li>
-      <li data-n="III."><b>Long-horizon tasks are becoming genuinely autonomous.</b> Days-long work, no human steering every step, and the system still makes forward progress. The models were already getting smarter — now the systems around them are catching up too.</li>
+      <li data-n="II."><b>The same AVO architecture transfers across domains.</b> The agent doesn't need to be task-specific, one architecture handled GPU-kernel optimization and ARC-AGI-3 puzzle-solving equally well. It's not about knowing one domain deeply; it's about having machinery that generalizes.</li>
+      <li data-n="III."><b>Long-horizon tasks are becoming genuinely autonomous.</b> Days-long work, no human steering every step, and the system still makes forward progress. The models were already getting smarter, now the systems around them are catching up too.</li>
     </ul>
 
     <div class="takeaway-line">
-      The takeaway is simple: you can build the smartest model on the planet, but without a harness, it's a Formula 1 engine sitting on a workbench — all that power, going nowhere.
+      The takeaway is simple: you can build the smartest model on the planet, but without a harness, it's a Formula 1 engine sitting on a workbench, all that power, going nowhere.
     </div>
   </section>
 
