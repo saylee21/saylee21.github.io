@@ -13,6 +13,7 @@ main{max-width:42rem;margin:0 auto;padding:2rem 1.2rem 5rem}
 h1{font:800 2.5rem/1.15 var(--font);margin:1rem 0 .3rem}
 h2{font:800 1.8rem/1.25 var(--font);color:var(--blue);margin:2.6rem 0 .4rem}
 h3{font:800 1.4rem/1.3 var(--font);color:var(--blue);margin:1.6rem 0 .2rem}
+h4{font:800 1.15rem/1.35 var(--font);color:var(--ink);margin:1.5rem 0 .2rem}
 p,li,td,th,figcaption,.note,.src,.sub,.box,.hop,sup{font-family:var(--font)}
 .sub{font-style:italic;color:var(--muted);margin:0 0 1.6rem}
 .lead{font-size:1.25rem;line-height:1.7}
@@ -168,19 +169,45 @@ td+td,th+th{text-align:right}
 
 <p>It hurts because repeated layers are read again: the lab’s own speed ceiling (614 GB/s of memory bandwidth, batch size one, BF16 weights) already includes repeated reads across loops.<sup><a href="#s1">1</a></sup></p>
 
-<p>The <b>KV cache</b> question (the model’s short-term memory of the text so far) has an answer now. <b>Each pass keeps its own KV cache</b>, so the 24-layer model carries 48 KV caches, and vLLM serves each pass’s cache like any other layer’s.</p>
+<p>The <b>KV cache</b> question (the model’s short-term memory of the text so far) has an answer now. <b>Each pass keeps its own KV cache</b>, so the 24-layer model carries 48 KV caches and 48 conv-state caches (the short convolution’s running state), and vLLM serves each pass’s cache like any other layer’s.</p>
 
 <p>The trade-off is capacity: on the research checkpoint, KV room drops from ~352K tokens at one pass to ~175K at three. A shared-cache option on the research checkpoint recovers some of that (~194K), but the shipping Inkling 2 Mini is fixed at three passes and rejects the toggle.<sup><a href="#s5">5</a></sup></p>
 
 <div class="tw"><table>
-<tr><th scope="col">passes through the loop</th><th scope="col">decode step, batch 1</th><th scope="col">KV cache capacity</th></tr>
-<tr><td>1</td><td>1.51 ms</td><td>352K tokens</td></tr>
-<tr><td>2</td><td>2.67 ms</td><td>233K tokens</td></tr>
-<tr><td>3</td><td>3.85 ms</td><td>175K tokens</td></tr>
+<tr><th scope="col">passes through the loop</th><th scope="col">decode step, batch 1</th><th scope="col">decode step, batch 32</th><th scope="col">KV cache capacity</th></tr>
+<tr><td>1</td><td>1.51 ms</td><td>3.81 ms</td><td>352K tokens</td></tr>
+<tr><td>2</td><td>2.67 ms</td><td>5.92 ms</td><td>233K tokens</td></tr>
+<tr><td>3</td><td>3.85 ms</td><td>8.11 ms</td><td>175K tokens</td></tr>
+<tr><td>3, shared KV cache</td><td>3.86 ms</td><td>8.10 ms</td><td>194K tokens</td></tr>
 </table></div>
-<p class="note">vLLM’s measurements on the variable-loop <i>research</i> checkpoint: one GB200, TP1, 4K context, forward pass only [5]. More passes means slower decode and less KV room. The shipping Inkling 2 Mini is fixed at 3 passes and does not take this toggle.</p>
+<p class="note">vLLM’s measurements on the variable-loop <i>research</i> checkpoint: one GB200, TP1, 4K context, forward pass only [5]. More passes means slower decode and less KV room. Sharing the cache frees less than dropping a pass, because the per-pass conv-state caches remain. The shipping Inkling 2 Mini is fixed at three passes and rejects both toggles.</p>
 
-<p>On balance, the lab found the non-looped model needed 140% more inference compute (2.4x) to reach the same loss on long agentic traces. That’s a compute comparison at equal quality, from their own unpruned test, not a measured token saving or a speedup.<sup><a href="#s1">1</a></sup> And the model already runs in vLLM, SGLang and Ollama.</p>
+<p>On balance, the lab found the non-looped model needed 140% more inference compute (2.4x) to reach the same loss on long agentic traces. That’s a compute comparison at equal quality, from their own unpruned test, not a measured token saving or a speedup.<sup><a href="#s1">1</a></sup></p>
+
+<h4>What the serving stack had to change</h4>
+<p>The loop did not need a new cache manager. vLLM registers each extra pass of a core layer as its own attention layer with its own KV cache, and the KV cache manager and prefix caching treat those entries like any other. That is the quiet reason day-0 support was possible: from the cache manager’s side, the model looks like a 48-layer model, not a special case.</p>
+
+<p>The kernels are where the work went. A naive implementation launches four message reads and four controllers, several kernels each, for every core layer on every later pass. vLLM reads all four messages in one attention-residual kernel, stacks the controllers’ weights so their projections run as batched GEMMs, and fuses the gated merge with the RMSNorm of the sublayer it feeds. It reuses Inkling 2 Small’s sublayer kernels and works at every tensor-parallel size, including a single GPU. Above one GPU, small batches also fuse the all-reduce over NVLink multicast.</p>
+
+<p>On the shipping model the loop is not a dial. Both research-checkpoint options are rejected there: <i>loop_num_passes</i> and <i>loop_share_cache</i> exist only on TML-d24-varloop-research and are set through <i>--hf-overrides</i>. The native DSpark speculator also requires the default three passes, because its draft reads the target’s hidden states at four fixed layer visits.</p>
+
+<div class="tw"><table>
+<tr><th scope="col">Stack</th><th scope="col">Status</th><th scope="col">What it means for serving</th></tr>
+<tr><td>vLLM</td><td>Day 0, in tree, Docker image</td><td>Per-pass KV and conv-state caches, prefix caching unchanged, fused message kernels, DSpark draft, TP1 and above.</td></tr>
+<tr><td>SGLang</td><td>Supported at launch</td><td>The release does not describe its cache layout, so check the KV budget before sizing a deployment.</td></tr>
+<tr><td>Ollama, GGUF</td><td>Supported at launch</td><td>The laptop path: any Mac with 32 GB or more, plus quantized GGUF via Unsloth and llama.cpp.</td></tr>
+<tr><td>Dynamo, TokenSpeed, Llama App</td><td>Supported at launch</td><td>Same weights, different serving shell. Check each one’s context and cache limits.</td></tr>
+</table></div>
+<p class="note">“Supported at launch” is the lab’s claim [1], not an independent test. The vLLM details are from its engineering post [5].</p>
+
+<h4>What is new here for an inference engineer</h4>
+<p>Depth is now a property of the weights, not a runtime knob. On the shipping model you cannot trade passes for latency: every request does the same 48 layer visits, so a batch never diverges on loop count, and capacity planning has one number to budget instead of a range.</p>
+
+<p>The serving win, if there is one, comes from the output side. On correctly answered GPQA Diamond questions the lab measured 3,703 reasoning tokens at one pass and 1,731 at three, with legibility unchanged. Decode is memory-bandwidth bound and runs one token at a time, so roughly half the output tokens is roughly half the decode steps on that workload. The loop costs 2.1x per decode step at batch 32 (3.81 to 8.11 ms), which is what the shorter output is paying for.</p>
+
+<p>The combination that matters for agents is per-pass caches plus ordinary prefix caching: a long agent trace resends the same prefix every turn, and vLLM reuses it across the 48 cache layers without special handling.</p>
+
+<p>What this does not prove: there is no independent throughput or cost-per-token number yet. The 614 GB/s figure is the lab’s theoretical ceiling at BF16 and batch one, not a measurement on your hardware, the timing table is one GB200 at 4K context, and the token saving was measured on one benchmark family, not on your traffic.</p>
 
 <h2>Did someone try this before?</h2>
 <svg class="hl" viewBox="0 0 320 14" preserveAspectRatio="none" aria-hidden="true"><path d="M4 9C50 4 90 12 140 7S230 12 270 6S310 10 316 8" fill="none" stroke="#3557e0" stroke-width="3.2" stroke-linecap="round" filter="url(#rough)"/></svg>
