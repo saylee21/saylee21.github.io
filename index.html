@@ -3,308 +3,412 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Saylee Bharsakle — Real-Time Systems & Cross-Platform Engineer</title>
+<title>Saylee Bharsakle, LLM Inference Infrastructure</title>
+<meta name="description" content="Saylee Bharsakle finds where LLM requests wait and makes them stop waiting. Routing, discovery and the Kubernetes underneath, in AIBrix and llm-d.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Caveat:wght@500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --paper: #f4f4f1;
-    --paper-raised: #eae9e3;
-    --ink: #191b22;
-    --ink-soft: #565a63;
-    --ink-faint: #9a9ea5;
-    --line: #dcdad2;
-    --accent: #2c4870;
-    --accent-soft: #e6ebf1;
-    --accent-line: #b9c6d6;
-    --font-serif: 'Libre Caslon Text', Georgia, serif;
-    --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', monospace;
+    --paper:#f2eadb;
+    --ink:#1d1b33;
+    --blue:#0078bf;
+    --pink:#ff48b0;
+    --yellow:#ffe14d;
+    --soft:#5b5670;
+    --display:'Bricolage Grotesque', system-ui, sans-serif;
+    --hand:'Caveat', 'Bradley Hand', cursive;
+    --mono:'Space Mono', ui-monospace, monospace;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   html{scroll-behavior:smooth;}
   body{
-    background:var(--paper);
-    color:var(--ink);
-    font-family:var(--font-serif);
-    font-size:17px;
-    line-height:1.75;
-    -webkit-font-smoothing:antialiased;
+    background:var(--paper); color:var(--ink);
+    font-family:var(--display); font-size:18px; line-height:1.6;
+    -webkit-font-smoothing:antialiased; overflow-x:hidden;
   }
-  a{color:var(--accent); text-underline-offset:3px; text-decoration-thickness:1px;}
-  a:hover{color:var(--ink);}
-  a:focus-visible, nav a:focus-visible{outline:2px solid var(--accent); outline-offset:3px; border-radius:3px;}
-  ::selection{background:var(--accent-soft);}
+  body::before{
+    content:''; position:fixed; inset:0; pointer-events:none; z-index:100; opacity:.35; mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .4 0 0 0 0 .32 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  a{color:inherit;}
+  ::selection{background:var(--yellow);}
+  a:focus-visible{outline:3px solid var(--pink); outline-offset:3px;}
 
-  .wrap{max-width:760px; margin:0 auto; padding:0 20px;}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 20px;}
 
-  /* floating nav */
-  .nav-outer{
-    position:sticky; top:22px; z-index:50;
-    display:flex; justify-content:center; margin-bottom:0;
-    pointer-events:none;
-  }
-  nav{
-    pointer-events:auto;
-    display:flex; gap:0; background:rgba(244,244,241,0.88);
-    backdrop-filter:blur(8px);
-    border:1px solid var(--line); border-radius:999px;
-    padding:6px 6px; box-shadow:0 2px 14px rgba(25,27,34,0.06);
-  }
-  nav a{
-    font-family:var(--font-mono); font-size:11px; letter-spacing:0.08em;
-    text-transform:uppercase; color:var(--ink-soft); text-decoration:none;
-    padding:8px 17px; border-radius:999px; transition:all .15s;
-  }
-  nav a:hover{background:var(--accent-soft); color:var(--accent);}
+  .top{display:flex; justify-content:space-between; align-items:center; gap:12px; padding:22px 0; flex-wrap:wrap;}
+  .mark{font-family:var(--mono); font-size:13px; font-weight:700; letter-spacing:.04em; text-decoration:none;}
+  .mark span{color:var(--pink);}
+  .top nav{display:flex; gap:18px; flex-wrap:wrap;}
+  .top nav a{font-family:var(--mono); font-size:12px; text-decoration:none; border-bottom:2px solid transparent;}
+  .top nav a:hover{border-color:var(--pink);}
 
-  /* hero */
-  .hero{padding:92px 0 0; text-align:center;}
-  .eyebrow{
-    display:inline-block;
-    font-family:var(--font-mono); font-size:10.5px; letter-spacing:0.16em;
-    text-transform:uppercase; color:var(--accent);
-    margin-bottom:26px;
+  .hero{padding:48px 0 12px; position:relative;}
+  .sticker{
+    display:inline-block; font-family:var(--mono); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.08em;
+    background:var(--yellow); padding:6px 12px; transform:rotate(-2deg); margin-bottom:28px;
+    box-shadow:3px 3px 0 var(--ink);
   }
   h1{
-    font-family:var(--font-serif); font-weight:700;
-    font-size:clamp(38px, 6vw, 52px);
-    letter-spacing:-0.01em; margin-bottom:10px; color:var(--ink);
+    font-weight:800; font-size:clamp(46px, 9.4vw, 116px); line-height:.92; letter-spacing:-.035em;
+    max-width:11ch; position:relative; isolation:isolate;
   }
-  .role{
-    color:var(--ink-faint); font-size:15px; font-style:italic; margin-bottom:44px;
+  .riso{position:relative; display:inline-block; color:var(--blue);}
+  .riso::after{
+    content:attr(data-t); position:absolute; left:.03em; top:.025em; color:var(--pink); mix-blend-mode:multiply; pointer-events:none;
+  }
+  h1 em{font-style:normal; position:relative; white-space:nowrap;}
+  h1 em::after{
+    content:''; position:absolute; left:-2%; right:-2%; bottom:.06em; height:.2em; background:var(--pink); opacity:.55; z-index:-1;
+    transform:skew(-12deg) rotate(-1deg);
+  }
+  .lede{max-width:600px; font-size:clamp(18px, 2.1vw, 21px); color:var(--soft); margin-top:28px;}
+  .lede b{color:var(--ink);}
+  .hand-note{
+    font-family:var(--hand); font-size:26px; color:var(--pink); position:absolute; right:2%; top:70px; transform:rotate(6deg);
+    line-height:1.1; max-width:230px; text-align:center;
+  }
+  .hand-note svg{display:block; margin:6px auto 0;}
+
+  .flow{position:relative; margin:40px 0 0; height:330px;}
+  .flow canvas{position:absolute; inset:0; width:100%; height:100%;}
+  .flow .lbl{position:absolute; font-family:var(--hand); font-size:24px; color:var(--blue); line-height:1; white-space:nowrap; transform:translateX(-50%);}
+  .flow .lbl.p{color:var(--pink);}
+  .flow-cap{font-family:var(--mono); font-size:11px; color:var(--soft); text-align:right; margin-top:4px;}
+
+  .ticker{background:var(--blue); color:var(--paper); transform:rotate(-1.2deg); margin:56px -40px 90px; overflow:hidden; padding:14px 0; box-shadow:0 6px 0 var(--pink);}
+  .ticker-track{display:flex; gap:48px; width:max-content; animation:tick 38s linear infinite; font-family:var(--mono); font-size:15px; font-weight:700;}
+  .ticker-track span{white-space:nowrap;}
+  .ticker-track i{font-style:normal; color:var(--yellow);}
+  @keyframes tick{to{transform:translateX(-50%);}}
+
+  section{padding:0 0 96px;}
+  .kicker{font-family:var(--mono); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--pink); margin-bottom:10px;}
+  h2{font-weight:800; font-size:clamp(34px, 5.4vw, 60px); line-height:1; letter-spacing:-.03em; margin-bottom:40px;}
+
+  .cases{display:grid; grid-template-columns:1fr 1fr; gap:44px 36px;}
+  .case{
+    background:#fbf6ec; padding:30px 28px 26px; position:relative; border:2px solid var(--ink);
+    box-shadow:8px 8px 0 var(--blue);
+  }
+  .case:nth-child(1){transform:rotate(-.6deg);}
+  .case:nth-child(2){transform:rotate(.8deg); box-shadow:8px 8px 0 var(--pink); margin-top:36px;}
+  .case::before{
+    content:''; position:absolute; top:-14px; left:50%; width:110px; height:28px; transform:translateX(-50%) rotate(-3deg);
+    background:rgba(255,225,77,.75); border-left:1px dashed rgba(0,0,0,.15); border-right:1px dashed rgba(0,0,0,.15);
+  }
+  .case-tag{font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--soft);}
+  .case h3{font-size:27px; font-weight:800; line-height:1.1; letter-spacing:-.02em; margin:8px 0 18px;}
+  .case h3 a{text-decoration:none;}
+  .case h3 a:hover{color:var(--blue);}
+  .big{
+    display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:6px;
+    font-weight:800; font-size:clamp(40px, 5.4vw, 58px); letter-spacing:-.04em; line-height:1;
+  }
+  .big .from{color:var(--soft); text-decoration:line-through; text-decoration-color:var(--pink); text-decoration-thickness:4px; font-size:.62em;}
+  .big .arrow{font-family:var(--hand); color:var(--pink); font-size:.7em;}
+  .big .to{color:var(--blue);}
+  .big-cap{font-family:var(--mono); font-size:12px; color:var(--soft); margin-bottom:20px;}
+  .case p{font-size:16px; color:#3a3650; margin-bottom:12px;}
+  .prs{display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 6px;}
+  .prs a{
+    font-family:var(--mono); font-size:12px; text-decoration:none; border:1.5px solid var(--ink); padding:3px 9px; border-radius:99px; background:var(--paper);
+  }
+  .prs a:hover{background:var(--yellow);}
+  .margin{font-family:var(--hand); font-size:22px; color:var(--pink); line-height:1.1; margin-top:14px; transform:rotate(-1.5deg);}
+
+  .count{display:flex; align-items:center; gap:28px; flex-wrap:wrap; margin-bottom:44px;}
+  .count-n{
+    font-weight:800; font-size:clamp(90px, 16vw, 170px); line-height:.8; letter-spacing:-.06em; color:var(--pink);
+    text-shadow:6px 5px 0 rgba(0,120,191,.85);
+  }
+  .count p{font-size:21px; max-width:440px;}
+  .count p span{display:block; font-family:var(--hand); font-size:26px; color:var(--blue);}
+  .also{display:grid; grid-template-columns:repeat(3, 1fr); gap:22px;}
+  .also div{border-top:4px solid var(--ink); padding-top:14px;}
+  .also h4{font-size:20px; font-weight:800; letter-spacing:-.01em;}
+  .also .n{font-family:var(--mono); font-size:12px; color:var(--pink); font-weight:700;}
+  .also p{font-size:15.5px; color:var(--soft); margin-top:8px;}
+
+  .index{list-style:none; counter-reset:w;}
+  .index li{
+    counter-increment:w; display:grid; grid-template-columns:60px 1fr auto; gap:14px; align-items:baseline;
+    border-top:2px solid var(--ink); padding:18px 0;
+  }
+  .index li:last-child{border-bottom:2px solid var(--ink);}
+  .index li::before{content:counter(w, decimal-leading-zero); font-family:var(--mono); font-weight:700; color:var(--pink);}
+  .index a{font-size:23px; font-weight:800; letter-spacing:-.015em; text-decoration:none; line-height:1.2;}
+  .index a:hover{color:var(--blue); text-decoration:underline; text-decoration-color:var(--pink); text-decoration-thickness:3px;}
+  .index small{display:block; font-size:15px; color:var(--soft); font-weight:400; margin-top:4px;}
+  .index .where{font-family:var(--mono); font-size:11px; text-transform:uppercase; color:var(--soft);}
+
+  .before{display:grid; grid-template-columns:1fr 2fr; gap:30px; align-items:start;}
+  .before h2{margin-bottom:0;}
+  .before p{color:var(--soft); font-size:17px; margin-bottom:14px;}
+  .before b{color:var(--ink);}
+  .halftone{
+    background-image:radial-gradient(var(--pink) 1.3px, transparent 1.5px); background-size:9px 9px; opacity:.5;
+    height:90px; margin-top:18px; -webkit-mask-image:linear-gradient(90deg, #000, transparent); mask-image:linear-gradient(90deg, #000, transparent);
   }
 
-  /* signature element: WebRTC-style handshake trace */
-  .handshake{
-    display:flex; align-items:center; justify-content:center;
-    max-width:520px; margin:0 auto 88px; padding:0 12px;
+  .contact{padding:40px 0 70px; border-top:2px solid var(--ink);}
+  .contact h2{font-size:clamp(52px, 10vw, 128px); line-height:.9; margin:18px 0 30px;}
+  .contact h2 .riso{color:var(--pink);}
+  .contact h2 .riso::after{color:var(--blue);}
+  .contact p{font-size:20px; max-width:560px; color:var(--soft); margin-bottom:26px;}
+  .links{display:flex; flex-wrap:wrap; gap:12px;}
+  .links a{
+    font-family:var(--mono); font-size:14px; font-weight:700; text-decoration:none; padding:10px 16px; border:2px solid var(--ink);
+    background:#fbf6ec; box-shadow:4px 4px 0 var(--ink); transition:transform .12s, box-shadow .12s;
   }
-  .hs-node{display:flex; flex-direction:column; align-items:center; flex-shrink:0;}
-  .hs-dot{
-    width:7px; height:7px; border-radius:50%; background:var(--ink-faint);
-    margin-bottom:9px;
-  }
-  .hs-node.is-final .hs-dot{
-    background:var(--accent); box-shadow:0 0 0 4px var(--accent-soft);
-  }
-  .hs-label{
-    font-family:var(--font-mono); font-size:9.5px; letter-spacing:0.1em;
-    text-transform:uppercase; color:var(--ink-faint); white-space:nowrap;
-  }
-  .hs-node.is-final .hs-label{color:var(--accent);}
-  .hs-line{
-    flex:1; height:1px; background:var(--line); margin:0 10px 20px;
-    position:relative; overflow:hidden;
-  }
-  .hs-line::after{
-    content:''; position:absolute; inset:0; background:var(--accent-line);
-    transform:scaleX(0); transform-origin:left; animation:draw 1.4s ease forwards;
-  }
-  .hs-line:nth-of-type(1)::after{animation-delay:.1s;}
-  .hs-line:nth-of-type(2)::after{animation-delay:.5s;}
-  .hs-line:nth-of-type(3)::after{animation-delay:.9s;}
-  @keyframes draw{to{transform:scaleX(1);}}
-  @media (prefers-reduced-motion: reduce){
-    .hs-line::after{animation:none; transform:scaleX(1);}
-  }
+  .links a:hover{transform:translate(-2px,-2px); box-shadow:6px 6px 0 var(--pink);}
+  .links a.main{background:var(--yellow);}
+  .sign{font-family:var(--hand); font-size:24px; color:var(--blue); margin-top:56px;}
 
-  /* prose sections */
-  section{padding:0 0 56px; text-align:left;}
-  .divider{border:none; border-top:1px solid var(--line); margin:0 0 56px;}
-  h2{
-    font-family:var(--font-mono); font-size:11px; letter-spacing:0.14em;
-    text-transform:uppercase; color:var(--ink-faint); margin-bottom:26px;
+  @media (max-width:820px){
+    .cases, .also, .before{grid-template-columns:1fr;}
+    .case:nth-child(2){margin-top:0;}
+    .hand-note{display:none;}
+    .flow{height:250px;}
+    .flow .lbl{font-size:19px;}
   }
-  p{margin-bottom:20px; color:var(--ink);}
-  p.dim{color:var(--ink-soft);}
-
-  /* status readout strip */
-  .strip{
-    display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;
-    border-top:1px solid var(--line); border-bottom:1px solid var(--line);
-    padding:18px 0; margin-bottom:56px;
-  }
-  .strip-label{
-    font-family:var(--font-mono); font-size:10px; letter-spacing:0.12em;
-    text-transform:uppercase; color:var(--ink-faint);
-    display:flex; align-items:center; gap:8px;
-  }
-  .strip-dot{
-    width:6px; height:6px; border-radius:50%; background:var(--accent);
-    box-shadow:0 0 0 3px var(--accent-soft);
-  }
-  .strip p{font-size:15.5px; color:var(--ink-soft); margin:0;}
-
-  /* project entries as prose, not cards */
-  .entry{margin-bottom:34px;}
-  .entry-head{
-    display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:6px;
-  }
-  .entry-head strong{font-size:18px; font-weight:700;}
-  .entry-client{
-    font-family:var(--font-mono); font-size:11px; color:var(--accent);
-  }
-  .entry p{font-size:16px; color:var(--ink-soft); margin-bottom:8px;}
-  .stack{font-family:var(--font-mono); font-size:12px; color:var(--ink-faint);}
-
-  /* writing as understated list */
-  .list-item{
-    padding:14px 0; border-top:1px solid var(--line);
-    display:flex; justify-content:space-between; align-items:baseline; gap:16px; flex-wrap:wrap;
-  }
-  .list-item:first-of-type{border-top:none;}
-  .list-item a{font-weight:600; text-decoration:underline;}
-  .list-meta{font-family:var(--font-mono); font-size:11px; color:var(--ink-faint); white-space:nowrap;}
-  .list-desc{width:100%; font-size:14.5px; color:var(--ink-faint); font-family:var(--font-mono); margin-top:2px;}
-
-  footer{padding:8px 0 88px; text-align:left;}
-  footer p{font-size:16px; color:var(--ink-soft); max-width:480px;}
-  .contact-links{
-    display:flex; flex-wrap:wrap; gap:6px 20px;
-    font-family:var(--font-mono); font-size:13px; margin-top:20px;
-  }
-  .contact-links a{text-decoration:none; color:var(--ink);}
-  .contact-links a:hover{color:var(--accent);}
-  .sign{margin-top:48px; font-family:var(--font-mono); font-size:11px; color:var(--ink-faint);}
-
-  @media (max-width:600px){
-    .hero{padding:72px 0 0;}
+  @media (max-width:500px){
     body{font-size:16px;}
-    .handshake{margin-bottom:64px;}
-    .hs-label{font-size:8.5px;}
+    .index li{grid-template-columns:36px 1fr;}
+    .index .where{display:none;}
+    .index a{font-size:20px;}
+    .case{padding:26px 20px 22px;}
+    .ticker{margin:44px -30px 70px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .ticker-track{animation:none;}
   }
 </style>
 </head>
 <body>
 
-<div class="nav-outer">
-  <nav>
-    <a href="#work">Work</a>
-    <a href="#writing">Writing</a>
-    <a href="#contact">Contact</a>
-  </nav>
-</div>
-
 <div class="wrap">
 
-  <div class="hero">
-    <span class="eyebrow">Real-Time Systems · Matrix Protocol · WebRTC</span>
-    <h1>Saylee Bharsakle</h1>
-    <div class="role">software engineer — real-time systems &amp; cross-platform applications, Pune</div>
+  <header class="top">
+    <a class="mark" href="#">saylee<span>.</span>bharsakle</a>
+    <nav>
+      <a href="#work">work</a>
+      <a href="#open">upstream</a>
+      <a href="#writing">writing</a>
+      <a href="#contact">contact</a>
+    </nav>
+  </header>
 
-    <div class="handshake" aria-hidden="true">
-      <div class="hs-node"><span class="hs-dot"></span><span class="hs-label">Offer</span></div>
-      <div class="hs-line"></div>
-      <div class="hs-node"><span class="hs-dot"></span><span class="hs-label">Answer</span></div>
-      <div class="hs-line"></div>
-      <div class="hs-node"><span class="hs-dot"></span><span class="hs-label">ICE</span></div>
-      <div class="hs-line"></div>
-      <div class="hs-node is-final"><span class="hs-dot"></span><span class="hs-label">Connected</span></div>
+  <div class="hero">
+    <span class="sticker">LLM inference infra · Pune</span>
+    <h1>I make <span class="riso" data-t="requests">requests</span> stop <em>waiting.</em></h1>
+    <p class="lede">I find the bottleneck between a prompt and the GPU that answers it, <b>measure it, and remove it in the open</b>. Routing, discovery, and the Kubernetes underneath, mostly in <b>AIBrix</b> and <b>llm-d</b>.</p>
+
+    <div class="hand-note" aria-hidden="true">
+      every dot is a request.<br>watch them squeeze
+      <svg width="60" height="70" viewBox="0 0 60 70" fill="none" stroke="#ff48b0" stroke-width="2.5" stroke-linecap="round"><path d="M40 4 C 52 26, 20 40, 24 64"/><path d="M14 54 L24 65 L32 52"/></svg>
     </div>
+
+    <div class="flow" id="flow" role="img" aria-label="Animated sketch of requests passing through a bottleneck, a router, and four model pods">
+      <canvas id="c"></canvas>
+      <span class="lbl p" style="left:9%; top:2%">requests</span>
+      <span class="lbl" style="left:36%; top:28%">the bottleneck</span>
+      <span class="lbl" style="left:62%; top:62%">router</span>
+      <span class="lbl" style="left:91%; top:-4%">pods</span>
+    </div>
+    <div class="flow-cap">schematic, not real traffic</div>
   </div>
 
-  <section>
-    <p>I build the infrastructure most engineers never get asked to touch — encrypted chat, live calls, screen sharing, the layer that has to work perfectly or not at all. That's the work I go looking for.</p>
-    <p class="dim">Three years in, most recently at iQ Innovations Hub, I architected and delivered a full <strong style="color:var(--ink)">Matrix Protocol + WebRTC</strong> communication suite for a U.S. enterprise client, end to end: E2EE messaging, video/audio calling, screen sharing, and call recording, from a single Flutter codebase across Android, iOS, and Web. Production meant going past Flutter itself — 1,000+ lines each of native Swift and Kotlin — to fix platform-level conflicts nobody warns you about: screen recording fighting the WebRTC capture pipeline, iOS silently killing push delivery on background transitions.</p>
-    <p class="dim">I work directly with client stakeholders, not through a delivery layer — architecture calls through production deployment, across distributed and cross-border teams. And I write about the systems I build, because a system I can explain clearly is one I actually understand.</p>
-  </section>
-
-  <div class="strip">
-    <span class="strip-label"><span class="strip-dot"></span>Status</span>
-    <p>Open to full-time, contract, and consulting work — real-time communication infrastructure, cross-platform architecture, and technical delivery for teams that need someone to own a system, not just implement a ticket.</p>
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track">
+      <span><i>5,006 → 22</i> Redis commands per routing decision</span>
+      <span><i>85 ms → 12 ms</i> p99 at concurrency 32</span>
+      <span><i>110 s</i> of silent staleness, now an alert at <i>30 s</i></span>
+      <span><i>34</i> merged PRs upstream</span>
+      <span>AIBrix · llm-d · Kueue · kgateway · Flux · Volcano</span>
+      <span><i>5,006 → 22</i> Redis commands per routing decision</span>
+      <span><i>85 ms → 12 ms</i> p99 at concurrency 32</span>
+      <span><i>110 s</i> of silent staleness, now an alert at <i>30 s</i></span>
+      <span><i>34</i> merged PRs upstream</span>
+      <span>AIBrix · llm-d · Kueue · kgateway · Flux · Volcano</span>
+    </div>
   </div>
 
   <section id="work">
-    <h2>Work</h2>
+    <div class="kicker">Case files</div>
+    <h2>Two bottlenecks I owned,<br>RFC to merged.</h2>
 
-    <div class="entry">
-      <div class="entry-head"><strong>Hotel365 Matrix App</strong><span class="entry-client">Shreem Capital, USA</span></div>
-      <p>Secure communication suite — E2EE messaging, WebRTC calling, screen sharing, call recording, self-hosted Sygnal push. The flagship engagement: real-time systems depth rarely handed to a mobile engineer, delivered end to end with direct client ownership.</p>
-      <span class="stack">Flutter · Matrix SDK · WebRTC · native Swift/Kotlin</span>
-    </div>
+    <div class="cases">
+      <article class="case">
+        <div class="case-tag">AIBrix · RFC #3463 · 2 PRs merged</div>
+        <h3><a href="https://github.com/vllm-project/aibrix/issues/3463" target="_blank" rel="noopener">Every routing decision was asking Redis about every pod</a></h3>
+        <div class="big"><span class="from">5,006</span><span class="arrow">→</span><span class="to">22</span></div>
+        <div class="big-cap">Redis commands per decision, 5,000 pods</div>
+        <p>The inflight saturation filter ran before candidate selection, so one request paid a Redis read for each pod in the cluster. I moved it onto the candidate set. p99 at concurrency 32 dropped from 85 to 92 ms to 12.2 to 13.7 ms.</p>
+        <div class="prs">
+          <a href="https://github.com/vllm-project/aibrix/pull/3466" target="_blank" rel="noopener">#3466 pin the count</a>
+          <a href="https://github.com/vllm-project/aibrix/pull/3467" target="_blank" rel="noopener">#3467 move the filter</a>
+        </div>
+        <div class="margin">measured on one machine, one real Redis 8</div>
+      </article>
 
-    <div class="entry">
-      <div class="entry-head"><strong>IICS Customer App</strong><span class="entry-client">ARTUS GmbH, Germany</span></div>
-      <p>Insurance self-service portal — claims, contracts, and document management for a European insurer, one codebase across Android, iOS, and Web. WebView OAuth, encrypted token storage, German/English localization.</p>
-      <span class="stack">Flutter · BLoC · dartz · flutter_secure_storage</span>
-    </div>
-
-    <div class="entry">
-      <div class="entry-head"><strong>Hotel365 Web</strong><span class="entry-client">iQ Innovations Hub</span></div>
-      <p>15+ dashboard modules for hotel GMs and revenue managers on Next.js App Router with Server Components — multi-tenant, AI-generated daily briefings, Chart.js analytics.</p>
-      <span class="stack">Next.js · TypeScript · Tailwind</span>
-    </div>
-
-    <div class="entry">
-      <div class="entry-head"><strong>Planet Client</strong><span class="entry-client">iQ Innovations Hub</span></div>
-      <p>A config-driven widget factory that renders UI entirely from API configuration — new tenants, zero code changes.</p>
-      <span class="stack">Flutter · BLoC · Hive</span>
-    </div>
-
-    <div class="entry">
-      <div class="entry-head"><strong>DTP Agri</strong><span class="entry-client">iQ Innovations Hub</span></div>
-      <p>B2B agritech platform with role-specific dashboards for farmers, packers, and exporters — MLKit OCR document capture, live GPS tracking, biometric auth.</p>
-      <span class="stack">Flutter · GetX · MLKit OCR</span>
-    </div>
-
-    <div class="entry">
-      <div class="entry-head"><strong>Traverse</strong><span class="entry-client">iQ Innovations Hub</span></div>
-      <p>Social travel app. Independently researched and shipped Unity AR destination previews embedded into Flutter via Method Channels — rarely delivered in production Flutter apps.</p>
-      <span class="stack">Flutter · Unity AR · Mapbox</span>
+      <article class="case">
+        <div class="case-tag">AIBrix · RFC #3552 · 4 PRs merged</div>
+        <h3><a href="https://github.com/vllm-project/aibrix/issues/3552" target="_blank" rel="noopener">A gateway that routed to a pod that no longer existed</a></h3>
+        <div class="big"><span class="from">110 s</span><span class="arrow">→</span><span class="to">30 s</span></div>
+        <div class="big-cap">silent and healthy, now an alert</div>
+        <p>I cut one gateway replica off from the API server and deleted a pod. It kept the pod in its routing list for 110 seconds and reported healthy. Now every replica checks reachability every 10 s, alerts after 30 s, and exports how old its watch is, at zero extra requests.</p>
+        <p>I measured before I shipped. An idle watch on Kubernetes 1.29 sent no progress in 300 s, so that metric only turns on for 1.31 and newer.</p>
+        <div class="prs">
+          <a href="https://github.com/vllm-project/aibrix/pull/3555" target="_blank" rel="noopener">#3555 detect</a>
+          <a href="https://github.com/vllm-project/aibrix/pull/3569" target="_blank" rel="noopener">#3569 metadata only</a>
+          <a href="https://github.com/vllm-project/aibrix/pull/3602" target="_blank" rel="noopener">#3602 watch age</a>
+          <a href="https://github.com/vllm-project/aibrix/pull/3607" target="_blank" rel="noopener">#3607 CI on 1.31</a>
+        </div>
+        <div class="margin">next up: pull a stale replica out of rotation, safely</div>
+      </article>
     </div>
   </section>
 
-  <hr class="divider">
+  <section id="open">
+    <div class="count">
+      <div class="count-n">34</div>
+      <p>merged pull requests in the projects that serve and schedule models. <span>all in the open, all reviewed by maintainers</span></p>
+    </div>
+    <div class="also">
+      <div>
+        <span class="n">12 merged</span>
+        <h4>llm-d</h4>
+        <p>Endpoint picker fixes. Prefix hash seeds mixing model and cache salt, flow control aging, shed requests not marked rejected, state leaking on early return.</p>
+      </div>
+      <div>
+        <span class="n">12 merged</span>
+        <h4>AIBrix</h4>
+        <p>The two case files above, plus /v1/audio/speech routing, a TPOT metric that divided wrong, and Files API header encoding.</p>
+      </div>
+      <div>
+        <span class="n">10 merged</span>
+        <h4>Kubernetes ecosystem</h4>
+        <p>Kueue topology scheduling, a Volcano preemption victim, leader election and GOMAXPROCS in kgateway, go fix across Flux.</p>
+      </div>
+    </div>
+  </section>
 
   <section id="writing">
-    <h2>Writing</h2>
-    <div class="list-item">
-      <a href="https://saylee21.github.io/articles/e2ee-chat-matrix-sdk.html" target="_blank" rel="noopener">Building E2EE Chat in Flutter with the Matrix SDK</a>
-      <span class="list-meta">long-form</span>
-      <div class="list-desc">Olm/Megolm, key management, cross-signing, device trust</div>
+    <div class="kicker">Writing</div>
+    <h2>Notes from the inside.</h2>
+    <ol class="index">
+      <li><a href="https://saylee21.github.io/articles/looping.html" target="_blank" rel="noopener">It's just a loop<small>What Inkling 2 Mini changed, and the inference loop underneath</small></a><span class="where">long read</span></li>
+      <li><a href="https://saylee21.github.io/articles/nvdiaAVOarticle.html" target="_blank" rel="noopener">Breaking down NVIDIA's 100 on ARC-AGI-3<small>Same model, 30 to 100 RHAE, and why the system around it matters</small></a><span class="where">long read</span></li>
+      <li><a href="https://medium.com/@sayleebharsakle2001/every-dashboard-said-success-451069fe59f6" target="_blank" rel="noopener">Every dashboard said success<small>Four stacked bugs in production, zero errors anywhere</small></a><span class="where">medium</span></li>
+      <li><a href="https://saylee21.github.io/articles/e2ee-chat-matrix-sdk.html" target="_blank" rel="noopener">Building E2EE chat with the Matrix SDK<small>Olm, Megolm, cross-signing, device trust</small></a><span class="where">long read</span></li>
+    </ol>
+  </section>
+
+  <section class="before">
+    <div>
+      <div class="kicker">Before this</div>
+      <h2>Real-time systems.</h2>
+      <div class="halftone"></div>
     </div>
-    <div class="list-item">
-      <a href="https://medium.com/@sayleebharsakle2001/video-calling-in-flutter-a-complete-guide-to-webrtc-matrix-d06cba97e091" target="_blank" rel="noopener">Video Calling in Flutter: WebRTC + Matrix</a>
-      <span class="list-meta">medium</span>
-      <div class="list-desc">RTCVideoRenderer, Mesh vs LiveKit, production checklist</div>
-    </div>
-    <div class="list-item">
-      <a href="https://medium.com/@sayleebharsakle2001/what-is-end-to-end-encrypted-file-sharing-a-full-guide-for-flutter-matrix-62c2f11b82c0" target="_blank" rel="noopener">What Is End-to-End Encrypted File Sharing?</a>
-      <span class="list-meta">medium</span>
-      <div class="list-desc">AES-256 per file, Megolm key distribution, rate limits</div>
-    </div>
-    <div class="list-item">
-      <a href="https://medium.com/@sayleebharsakle2001/voice-calling-in-flutter-a-complete-implementation-guide-bb515b731877" target="_blank" rel="noopener">Voice Calling in Flutter: A Complete Guide</a>
-      <span class="list-meta">medium</span>
-      <div class="list-desc">Call state machine, TURN setup, iOS audio routing</div>
-    </div>
-    <div class="list-item">
-      <a href="https://medium.com/@sayleebharsakle2001/what-is-the-matrix-sdk-a-flutter-developers-guide-to-real-time-chat-calls-and-more-2900569240a2" target="_blank" rel="noopener">What Is the Matrix SDK?</a>
-      <span class="list-meta">medium</span>
-      <div class="list-desc">Protocol, SDK features, integration approaches</div>
-    </div>
-    <div class="list-item">
-      <a href="https://medium.com/@sayleebharsakle2001/every-dashboard-said-success-451069fe59f6" target="_blank" rel="noopener">Every Dashboard Said Success</a>
-      <span class="list-meta">medium</span>
-      <div class="list-desc">A production debugging story — four stacked bugs, zero errors</div>
+    <div>
+      <p>Three years building the layer that has to work perfectly or not at all. At iQ Innovations Hub I architected an <b>encrypted Matrix and WebRTC communication suite</b> for a U.S. client, end to end. Messaging, calls, screen sharing and recording from one Flutter codebase, with over 1,000 lines each of native Swift and Kotlin for the platform fights.</p>
+      <p>Plus an insurance portal for a German insurer, hotel analytics dashboards in Next.js, and AR inside Flutter. It is where I learned to care about the failure nobody sees.</p>
     </div>
   </section>
 
-  <hr class="divider">
-
-  <footer id="contact">
-    <h2>Contact</h2>
-    <p>If you're building something that needs real-time, encrypted, cross-platform infrastructure done right — that's what I do. Open to full-time, contract, and consulting work.</p>
-    <div class="contact-links">
-      <a href="mailto:sayleebharsakle2001@gmail.com">sayleebharsakle2001@gmail.com</a>
-      <a href="https://github.com/saylee21" target="_blank" rel="noopener">github.com/saylee21</a>
+  <footer class="contact" id="contact">
+    <div class="kicker">Hiring for inference?</div>
+    <h2>Got a slow <span class="riso" data-t="p99?">p99?</span></h2>
+    <p>I'm looking for a full-time role in LLM serving and inference infrastructure. Send me the bottleneck.</p>
+    <div class="links">
+      <a class="main" href="mailto:sayleebharsakle2001@gmail.com">email me</a>
+      <a href="https://github.com/saylee21" target="_blank" rel="noopener">github</a>
+      <a href="https://x.com/say_lee_x" target="_blank" rel="noopener">x / twitter</a>
       <a href="https://www.linkedin.com/in/sayleebharsakle/" target="_blank" rel="noopener">linkedin</a>
     </div>
-    <div class="sign">Pune, India — building in public.</div>
+    <div class="sign">building in public, from Pune ✿</div>
   </footer>
 
 </div>
 
+<script>
+(() => {
+  const box = document.getElementById('flow'), cv = document.getElementById('c'), cx = cv.getContext('2d');
+  const BLUE = '#0078bf', PINK = '#ff48b0', INK = '#1d1b33';
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let W, H, pods = [], parts = [], g;
+  const r = (a, b) => a + Math.random() * (b - a);
+  const ss = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+  const wobble = (pts, amp) => pts.map(([x, y]) => [x + r(-amp, amp), y + r(-amp, amp)]);
+  function line(pts, col, w) {
+    cx.strokeStyle = col; cx.lineWidth = w; cx.lineCap = 'round'; cx.lineJoin = 'round'; cx.beginPath();
+    pts.forEach(([x, y], i) => i ? cx.lineTo(x, y) : cx.moveTo(x, y)); cx.stroke();
+  }
+
+  function layout() {
+    const dpr = Math.min(2, devicePixelRatio || 1);
+    W = box.clientWidth; H = box.clientHeight;
+    cv.width = W * dpr; cv.height = H * dpr; cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const cy = H * 0.5;
+    g = { cy, neck: W * 0.4, router: W * 0.62, pod: W * 0.86, gap: Math.max(10, H * 0.05) };
+    const n = 4, top = H * 0.14, bot = H * 0.86;
+    pods = Array.from({ length: n }, (_, i) => ({ y: top + (bot - top) * i / (n - 1), q: pods[i] ? pods[i].q : r(0, 4), rate: [0.045, 0.03, 0.06, 0.038][i] }));
+    g.funnel = [];
+    for (let k = 0; k < 2; k++) {
+      g.funnel.push(wobble([[W * 0.16, H * 0.06], [W * 0.28, H * 0.2], [g.neck - 6, cy - g.gap], [g.router - 20, cy - g.gap]], 1.6));
+      g.funnel.push(wobble([[W * 0.16, H * 0.94], [W * 0.28, H * 0.8], [g.neck - 6, cy + g.gap], [g.router - 20, cy + g.gap]], 1.6));
+    }
+    g.boxes = pods.map(p => {
+      const bw = Math.min(70, W * 0.1), bh = Math.max(22, H * 0.11), x = g.pod - 4, y = p.y - bh / 2;
+      return { x, y, bw, bh, s: [wobble([[x, y], [x + bw, y], [x + bw, y + bh], [x, y + bh], [x, y]], 1.2), wobble([[x, y], [x + bw, y], [x + bw, y + bh], [x, y + bh], [x, y]], 1.2)] };
+    });
+  }
+
+  const spawn = () => parts.push({ x: -8, y0: r(H * 0.08, H * 0.92), y: 0, s: r(2.2, 3.4), pod: -1, from: 0, size: r(3, 5) });
+
+  function step() {
+    cx.clearRect(0, 0, W, H);
+    const { cy, neck, router, pod } = g;
+    g.funnel.forEach(p => line(p, BLUE, 2));
+    cx.strokeStyle = BLUE; cx.lineWidth = 2.2;
+    for (let k = 0; k < 2; k++) { cx.beginPath(); cx.ellipse(router + k, cy, 18 + k, 17, k * 0.3, 0, Math.PI * 2); cx.stroke(); }
+    pods.forEach((p, i) => {
+      const b = g.boxes[i];
+      b.s.forEach(s => line(s, INK, 1.6));
+      const fill = Math.min(1, p.q / 14);
+      cx.globalAlpha = 0.85; cx.fillStyle = fill > 0.75 ? PINK : BLUE;
+      cx.fillRect(b.x + 4, b.y + 4, (b.bw - 8) * fill, b.bh - 8); cx.globalAlpha = 1;
+      if (!still) p.q = Math.max(0, p.q - p.rate);
+    });
+    cx.globalCompositeOperation = 'multiply';
+    for (const p of parts) {
+      if (p.x < neck) {
+        const k = ss(0, neck, p.x);
+        p.y = cy + (p.y0 - cy) * (1 - k) * 0.93 + Math.sin(p.x * 0.05 + p.y0) * 1.5 * (1 - k);
+        p.x += p.s * (1 - 0.55 * ss(neck * 0.6, neck, p.x));
+      } else if (p.x < router) {
+        p.y = cy + (p.y0 - cy) * 0.07 * (1 - ss(neck, router, p.x)); p.x += p.s * 1.25;
+      } else {
+        if (p.pod < 0) { let b = 0; pods.forEach((q, i) => { if (q.q < pods[b].q) b = i; }); p.pod = b; p.from = p.y; }
+        p.y = p.from + (pods[p.pod].y - p.from) * ss(router, pod - 6, p.x); p.x += p.s * 1.4;
+        if (p.x >= pod - 6) { pods[p.pod].q += 1; p.dead = true; }
+      }
+      cx.fillStyle = p.x < router ? PINK : BLUE;
+      cx.beginPath(); cx.arc(p.x, p.y, p.size, 0, Math.PI * 2); cx.fill();
+    }
+    cx.globalCompositeOperation = 'source-over';
+    parts = parts.filter(p => !p.dead);
+  }
+
+  layout();
+  addEventListener('resize', layout);
+  if (still) { for (let i = 0; i < 70; i++) { spawn(); parts[i].x = r(0, W * 0.8); } step(); return; }
+  for (let i = 0; i < 45; i++) { spawn(); parts[i].x = r(0, W * 0.38); }
+  let t = 0;
+  (function loop() { if (++t % 3 === 0) spawn(); step(); requestAnimationFrame(loop); })();
+})();
+</script>
 </body>
 </html>
