@@ -7,7 +7,7 @@
 <meta name="description" content="Saylee Bharsakle finds where LLM requests wait and makes them stop waiting. Routing, discovery and the Kubernetes underneath, in AIBrix and llm-d.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Caveat:wght@500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --paper:#f2eadb;
@@ -17,7 +17,6 @@
     --yellow:#ffe14d;
     --soft:#5b5670;
     --display:'Bricolage Grotesque', system-ui, sans-serif;
-    --hand:'Caveat', 'Bradley Hand', cursive;
     --mono:'Space Mono', ui-monospace, monospace;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
@@ -47,7 +46,7 @@
   .hero{padding:48px 0 12px; position:relative;}
   .sticker{
     display:inline-block; font-family:var(--mono); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.08em;
-    background:var(--yellow); padding:6px 12px; transform:rotate(-2deg); margin-bottom:28px;
+    background:var(--yellow); padding:6px 12px; margin-bottom:28px;
     box-shadow:3px 3px 0 var(--ink);
   }
   h1{
@@ -61,23 +60,18 @@
   h1 em{font-style:normal; position:relative; white-space:nowrap;}
   h1 em::after{
     content:''; position:absolute; left:-2%; right:-2%; bottom:.06em; height:.2em; background:var(--pink); opacity:.55; z-index:-1;
-    transform:skew(-12deg) rotate(-1deg);
+    transform:skew(-12deg);
   }
   .lede{max-width:600px; font-size:clamp(18px, 2.1vw, 21px); color:var(--soft); margin-top:28px;}
   .lede b{color:var(--ink);}
-  .hand-note{
-    font-family:var(--hand); font-size:26px; color:var(--pink); position:absolute; right:2%; top:70px; transform:rotate(6deg);
-    line-height:1.1; max-width:230px; text-align:center;
-  }
-  .hand-note svg{display:block; margin:6px auto 0;}
 
   .flow{position:relative; margin:40px 0 0; height:330px;}
   .flow canvas{position:absolute; inset:0; width:100%; height:100%;}
-  .flow .lbl{position:absolute; font-family:var(--hand); font-size:24px; color:var(--blue); line-height:1; white-space:nowrap; transform:translateX(-50%);}
+  .flow .lbl{position:absolute; font-family:var(--mono); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--blue); line-height:1; white-space:nowrap; transform:translateX(-50%);}
   .flow .lbl.p{color:var(--pink);}
   .flow-cap{font-family:var(--mono); font-size:11px; color:var(--soft); text-align:right; margin-top:4px;}
 
-  .ticker{background:var(--blue); color:var(--paper); transform:rotate(-1.2deg); margin:56px -40px 90px; overflow:hidden; padding:14px 0; box-shadow:0 6px 0 var(--pink);}
+  .ticker{background:var(--blue); color:var(--paper); margin:56px 0 90px; overflow:hidden; padding:14px 0; box-shadow:0 6px 0 var(--pink);}
   .ticker-track{display:flex; gap:48px; width:max-content; animation:tick 38s linear infinite; font-family:var(--mono); font-size:15px; font-weight:700;}
   .ticker-track span{white-space:nowrap;}
   .ticker-track i{font-style:normal; color:var(--yellow);}
@@ -92,10 +86,9 @@
     background:#fbf6ec; padding:30px 28px 26px; position:relative; border:2px solid var(--ink);
     box-shadow:8px 8px 0 var(--blue);
   }
-  .case:nth-child(1){transform:rotate(-.6deg);}
-  .case:nth-child(2){transform:rotate(.8deg); box-shadow:8px 8px 0 var(--pink); margin-top:36px;}
+  .case:nth-child(2){box-shadow:8px 8px 0 var(--pink); margin-top:36px;}
   .case::before{
-    content:''; position:absolute; top:-14px; left:50%; width:110px; height:28px; transform:translateX(-50%) rotate(-3deg);
+    content:''; position:absolute; top:-14px; left:50%; width:110px; height:28px; transform:translateX(-50%);
     background:rgba(255,225,77,.75); border-left:1px dashed rgba(0,0,0,.15); border-right:1px dashed rgba(0,0,0,.15);
   }
   .case-tag{font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--soft);}
@@ -107,7 +100,7 @@
     font-weight:800; font-size:clamp(40px, 5.4vw, 58px); letter-spacing:-.04em; line-height:1;
   }
   .big .from{color:var(--soft); text-decoration:line-through; text-decoration-color:var(--pink); text-decoration-thickness:4px; font-size:.62em;}
-  .big .arrow{font-family:var(--hand); color:var(--pink); font-size:.7em;}
+  .big .arrow{color:var(--pink); font-size:.6em;}
   .big .to{color:var(--blue);}
   .big-cap{font-family:var(--mono); font-size:12px; color:var(--soft); margin-bottom:20px;}
   .case p{font-size:16px; color:#3a3650; margin-bottom:12px;}
@@ -116,7 +109,7 @@
     font-family:var(--mono); font-size:12px; text-decoration:none; border:1.5px solid var(--ink); padding:3px 9px; border-radius:99px; background:var(--paper);
   }
   .prs a:hover{background:var(--yellow);}
-  .margin{font-family:var(--hand); font-size:22px; color:var(--pink); line-height:1.1; margin-top:14px; transform:rotate(-1.5deg);}
+  .margin{font-family:var(--mono); font-size:12px; color:var(--soft); margin-top:14px; padding-top:12px; border-top:1.5px dashed rgba(29,27,51,.3);}
 
   .count{display:flex; align-items:center; gap:28px; flex-wrap:wrap; margin-bottom:44px;}
   .count-n{
@@ -124,13 +117,39 @@
     text-shadow:6px 5px 0 rgba(0,120,191,.85);
   }
   .count p{font-size:21px; max-width:440px;}
-  .count p span{display:block; font-family:var(--hand); font-size:26px; color:var(--blue);}
-  .also{display:grid; grid-template-columns:repeat(3, 1fr); gap:22px;}
-  .also div{border-top:4px solid var(--ink); padding-top:14px;}
-  .also h4{font-size:20px; font-weight:800; letter-spacing:-.01em;}
-  .also .n{font-family:var(--mono); font-size:12px; color:var(--pink); font-weight:700;}
-  .also p{font-size:15.5px; color:var(--soft); margin-top:8px;}
 
+
+  .legend{display:flex; flex-wrap:wrap; gap:8px 20px; font-family:var(--mono); font-size:12px; color:var(--soft); margin-bottom:18px;}
+  .legend i{display:inline-block; width:11px; height:11px; border:1.5px solid var(--ink); margin-right:7px; vertical-align:-1px;}
+  .legend-tip{margin-left:auto;}
+  .layers{position:relative;}
+  .layer{
+    display:grid; grid-template-columns:44px minmax(0,1fr) auto; gap:0 18px; align-items:center;
+    padding:16px 18px 16px 0; border-top:2px solid var(--ink); position:relative; transition:background .35s;
+  }
+  .layer.lit{background:rgba(255,72,176,.10);}
+  .layer.core .l-name{font-size:26px;}
+  .rail{align-self:stretch; position:relative;}
+  .rail::before{content:''; position:absolute; left:50%; top:-16px; bottom:-16px; width:3px; margin-left:-1.5px; background:var(--ink);}
+  .layer.first .rail::before{top:50%;}
+  .rail b{position:absolute; left:50%; top:50%; width:13px; height:13px; margin:-6.5px; background:var(--paper); border:3px solid var(--ink); border-radius:50%; transition:background .3s, transform .3s;}
+  .layer.lit .rail b{background:var(--pink); transform:scale(1.35);}
+  .layer.off .rail::before{display:none;}
+  .layer.off .rail b{border-style:dashed; background:transparent;}
+  .l-name{font-size:21px; font-weight:800; letter-spacing:-.015em; line-height:1.15;}
+  .l-tag{font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; background:var(--ink); color:var(--paper); padding:2px 6px; margin-left:8px; vertical-align:4px;}
+  .l-desc{font-size:15px; color:var(--soft); margin-top:2px;}
+  .l-prs{display:flex; flex-wrap:wrap; gap:5px; justify-content:flex-end; align-items:center; max-width:250px;}
+  .l-prs a{width:17px; height:17px; border:1.5px solid var(--ink); display:block; transition:transform .15s;}
+  .l-prs a:hover, .l-prs a:focus-visible{transform:translateY(-3px);}
+  .layer.lit .l-prs a{animation:pop .5s ease;}
+  @keyframes pop{40%{transform:translateY(-4px);}}
+  .l-n{font-family:var(--mono); font-size:13px; font-weight:700; margin-left:6px; min-width:20px; text-align:right;}
+  .end{display:flex; align-items:center; gap:18px; padding:4px 0 22px; border-top:2px solid var(--ink);}
+  .end span{width:44px; text-align:center; font-family:var(--mono); font-size:11px; font-weight:700; background:var(--ink); color:var(--paper); padding:4px 0; margin-top:14px;}
+  .end em{font-style:normal; font-family:var(--mono); font-size:12px; color:var(--soft); margin-top:14px;}
+  .divider-path{font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--soft); padding:22px 0 10px 62px; border-top:2px dashed var(--ink);}
+  .layers > .layer:last-child{border-bottom:2px solid var(--ink);}
   .index{list-style:none; counter-reset:w;}
   .index li{
     counter-increment:w; display:grid; grid-template-columns:60px 1fr auto; gap:14px; align-items:baseline;
@@ -147,10 +166,6 @@
   .before h2{margin-bottom:0;}
   .before p{color:var(--soft); font-size:17px; margin-bottom:14px;}
   .before b{color:var(--ink);}
-  .halftone{
-    background-image:radial-gradient(var(--pink) 1.3px, transparent 1.5px); background-size:9px 9px; opacity:.5;
-    height:90px; margin-top:18px; -webkit-mask-image:linear-gradient(90deg, #000, transparent); mask-image:linear-gradient(90deg, #000, transparent);
-  }
 
   .contact{padding:40px 0 70px; border-top:2px solid var(--ink);}
   .contact h2{font-size:clamp(52px, 10vw, 128px); line-height:.9; margin:18px 0 30px;}
@@ -164,22 +179,29 @@
   }
   .links a:hover{transform:translate(-2px,-2px); box-shadow:6px 6px 0 var(--pink);}
   .links a.main{background:var(--yellow);}
-  .sign{font-family:var(--hand); font-size:24px; color:var(--blue); margin-top:56px;}
+  .sign{font-family:var(--mono); font-size:12px; color:var(--soft); margin-top:56px;}
 
   @media (max-width:820px){
-    .cases, .also, .before{grid-template-columns:1fr;}
+    .cases, .before{grid-template-columns:1fr;}
     .case:nth-child(2){margin-top:0;}
-    .hand-note{display:none;}
     .flow{height:250px;}
-    .flow .lbl{font-size:19px;}
+    .flow .lbl{font-size:10px;}
   }
   @media (max-width:500px){
     body{font-size:16px;}
+    .layer{grid-template-columns:30px minmax(0,1fr); padding-right:0;}
+    .rail{grid-row:span 2;}
+    .l-prs{justify-content:flex-start; max-width:none; margin-top:10px;}
+    .layer.core .l-name{font-size:22px;}
+    .l-name{font-size:19px;}
+    .divider-path{padding-left:48px;}
+    .end span{width:30px; font-size:9px;}
+    .legend-tip{margin-left:0; width:100%;}
     .index li{grid-template-columns:36px 1fr;}
     .index .where{display:none;}
     .index a{font-size:20px;}
     .case{padding:26px 20px 22px;}
-    .ticker{margin:44px -30px 70px;}
+    .ticker{margin:44px 0 70px;}
   }
   @media (prefers-reduced-motion: reduce){
     .ticker-track{animation:none;}
@@ -201,14 +223,10 @@
   </header>
 
   <div class="hero">
-    <span class="sticker">LLM inference infra · Pune</span>
+    <span class="sticker">Routing + serving engineer · open to work</span>
     <h1>I make <span class="riso" data-t="requests">requests</span> stop <em>waiting.</em></h1>
-    <p class="lede">I find the bottleneck between a prompt and the GPU that answers it, <b>measure it, and remove it in the open</b>. Routing, discovery, and the Kubernetes underneath, mostly in <b>AIBrix</b> and <b>llm-d</b>.</p>
+    <p class="lede">I work on how LLM requests get <b>routed and served</b>. Which pod a request goes to, whether it gets in, and whether the router's view of the cluster is true. I find the bottleneck, <b>measure it, and remove it in the open</b>, mostly in <b>AIBrix</b> and <b>llm-d</b>.</p>
 
-    <div class="hand-note" aria-hidden="true">
-      every dot is a request.<br>watch them squeeze
-      <svg width="60" height="70" viewBox="0 0 60 70" fill="none" stroke="#ff48b0" stroke-width="2.5" stroke-linecap="round"><path d="M40 4 C 52 26, 20 40, 24 64"/><path d="M14 54 L24 65 L32 52"/></svg>
-    </div>
 
     <div class="flow" id="flow" role="img" aria-label="Animated sketch of requests passing through a bottleneck, a router, and four model pods">
       <canvas id="c"></canvas>
@@ -250,7 +268,7 @@
           <a href="https://github.com/vllm-project/aibrix/pull/3466" target="_blank" rel="noopener">#3466 pin the count</a>
           <a href="https://github.com/vllm-project/aibrix/pull/3467" target="_blank" rel="noopener">#3467 move the filter</a>
         </div>
-        <div class="margin">measured on one machine, one real Redis 8</div>
+        <div class="margin">Measured on one machine against one real Redis 8.</div>
       </article>
 
       <article class="case">
@@ -266,33 +284,19 @@
           <a href="https://github.com/vllm-project/aibrix/pull/3602" target="_blank" rel="noopener">#3602 watch age</a>
           <a href="https://github.com/vllm-project/aibrix/pull/3607" target="_blank" rel="noopener">#3607 CI on 1.31</a>
         </div>
-        <div class="margin">next up: pull a stale replica out of rotation, safely</div>
+        <div class="margin">Next: take a stale replica out of rotation, safely.</div>
       </article>
     </div>
   </section>
 
   <section id="open">
+    <div class="kicker">Upstream</div>
     <div class="count">
       <div class="count-n">34</div>
-      <p>merged pull requests in the projects that serve and schedule models. <span>all in the open, all reviewed by maintainers</span></p>
+      <p>merged PRs across <b>9 layers</b> of the stack. <b>21</b> sit on the serving path, and <b>14</b> of those are routing, admission and discovery.</p>
     </div>
-    <div class="also">
-      <div>
-        <span class="n">12 merged</span>
-        <h4>llm-d</h4>
-        <p>Endpoint picker fixes. Prefix hash seeds mixing model and cache salt, flow control aging, shed requests not marked rejected, state leaking on early return.</p>
-      </div>
-      <div>
-        <span class="n">12 merged</span>
-        <h4>AIBrix</h4>
-        <p>The two case files above, plus /v1/audio/speech routing, a TPOT metric that divided wrong, and Files API header encoding.</p>
-      </div>
-      <div>
-        <span class="n">10 merged</span>
-        <h4>Kubernetes ecosystem</h4>
-        <p>Kueue topology scheduling, a Volcano preemption victim, leader election and GOMAXPROCS in kgateway, go fix across Flux.</p>
-      </div>
-    </div>
+    <div class="legend"><span><i style="background:var(--blue)"></i>AIBrix</span><span><i style="background:var(--pink)"></i>llm-d</span><span><i style="background:var(--yellow)"></i>Kubernetes ecosystem</span><span class="legend-tip">each square is one merged PR, tap it to open</span></div>
+    <div class="layers" id="layers"></div>
   </section>
 
   <section id="writing">
@@ -310,7 +314,6 @@
     <div>
       <div class="kicker">Before this</div>
       <h2>Real-time systems.</h2>
-      <div class="halftone"></div>
     </div>
     <div>
       <p>Three years building the layer that has to work perfectly or not at all. At iQ Innovations Hub I architected an <b>encrypted Matrix and WebRTC communication suite</b> for a U.S. client, end to end. Messaging, calls, screen sharing and recording from one Flutter codebase, with over 1,000 lines each of native Swift and Kotlin for the platform fights.</p>
@@ -328,7 +331,7 @@
       <a href="https://x.com/say_lee_x" target="_blank" rel="noopener">x / twitter</a>
       <a href="https://www.linkedin.com/in/sayleebharsakle/" target="_blank" rel="noopener">linkedin</a>
     </div>
-    <div class="sign">building in public, from Pune ✿</div>
+    <div class="sign">Building in public.</div>
   </footer>
 
 </div>
@@ -410,5 +413,47 @@
   (function loop() { if (++t % 3 === 0) spawn(); step(); requestAnimationFrame(loop); })();
 })();
 </script>
+
+<script>
+(() => {
+  const R = { a: 'vllm-project/aibrix', r: 'llm-d/llm-d-router', d: 'llm-d/llm-d', kg: 'kgateway-dev/kgateway', ku: 'kubernetes-sigs/kueue', v: 'volcano-sh/volcano', f: 'fluxcd/flux2', fp: 'fluxcd/pkg', fi: 'fluxcd/image-automation-controller', fg: 'fluxcd/go-git-providers' };
+  const C = { a: 'var(--blue)', r: 'var(--pink)', d: 'var(--pink)', kg: 'var(--yellow)', ku: 'var(--yellow)', v: 'var(--yellow)', f: 'var(--yellow)', fp: 'var(--yellow)', fi: 'var(--yellow)', fg: 'var(--yellow)' };
+  const L = [
+    { n: 'Request API', d: 'OpenAI, Anthropic and SGLang request and response handling', p: [['a',3024,'Route /v1/audio/speech through the gateway'],['r',3803,'Keep an explicit zero cache read in Anthropic usage'],['r',3375,'Read and rewrite the SGLang model name']] },
+    { n: 'Gateway', d: 'kgateway leader election and GOMAXPROCS', p: [['kg',14987,'Let Go choose GOMAXPROCS from the live CPU limit'],['kg',14828,'Make leader election durations configurable']] },
+    { n: 'Routing', core: 1, d: 'candidate selection, prefix hashing, the endpoint picker', p: [['a',3466,'Pin the Redis command count of one routing decision'],['a',3467,'Run the inflight saturation filter on the candidate set'],['r',3378,'Separate model and cache salt in the prefix block hash seed'],['r',3484,'Release per-request producer state on early return'],['r',3672,'Cover the default utilization filter with prefix affinity'],['r',3673,'Assert the effective default EPP configuration'],['r',3688,'Select the token producer backend explicitly']] },
+    { n: 'Admission + flow control', core: 1, d: 'who gets in, who waits, who gets shed', p: [['r',3674,'Cancel an abandoned enqueue the client cannot address'],['r',3944,'Age a flow from when its last connection closes'],['r',3950,'Mark a shed request as rejected']] },
+    { n: 'Discovery + metrics', core: 1, d: 'keeping the router’s view of pods and load true', p: [['a',3555,'Detect a gateway replica’s stale discovery'],['a',3569,'List only object metadata for the consistency check'],['a',3602,'Export the Pod watch progress age'],['a',3332,'Fix the avg TPOT metric']] },
+    { n: 'Serving deployment', d: 'Helm charts, model weights cached per node', p: [['r',4014,'Scope the proxy ConfigMap name to the release'],['d',2869,'Cache model weights per node']] },
+    { off: 1, n: 'Files + batch', d: 'the Files API and the batch job service', p: [['a',2979,'Encode non-ASCII filenames in Files API headers'],['a',2977,'Enforce the reader size limit on bytes actually read'],['a',3000,'Fix a timezone-dependent expiry test'],['a',2959,'Fix a flaky metadata service crash test']] },
+    { off: 1, n: 'Cluster scheduling', d: 'Kueue and Volcano', p: [['ku',18118,'TAS: drop every unhealthy node the new assignment leaves'],['ku',17782,'Spell out previous in Workload update log keys'],['ku',17641,'Show the ProvisioningRequest retry loop'],['v',6205,'Restore an unevicted victim in predicates node info']] },
+    { off: 1, n: 'Delivery + CI', d: 'Flux, and envtest on Kubernetes 1.31', p: [['a',3607,'Run envtest-based tests on Kubernetes 1.31'],['f',6124,'Run go fix before the dirty check'],['fp',1382,'Run go fix in every module'],['fi',1125,'Run go fix as part of make test'],['fg',331,'Run go fix as part of make test']] },
+  ];
+  const box = document.getElementById('layers');
+  const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+  const path = L.filter(l => !l.off).length;
+  let html = '';
+  L.forEach((l, i) => {
+    if (i === path) html += '<div class="end"><span>GPU</span><em>the request reaches a model pod</em></div><div class="divider-path">the platform underneath</div>';
+    const cls = ['layer', l.core ? 'core' : '', l.off ? 'off' : '', i === 0 ? 'first' : ''].join(' ');
+    const sq = l.p.map(([r, n, t]) => `<a href="https://github.com/${R[r]}/pull/${n}" target="_blank" rel="noopener" style="background:${C[r]}" title="${esc(R[r].split('/')[1] + ' #' + n + ', ' + t)}" aria-label="${esc(R[r] + ' pull request ' + n + ': ' + t)}"></a>`).join('');
+    html += `<div class="${cls}"><div class="rail"><b></b></div><div><div class="l-name">${l.n}${l.core ? '<span class="l-tag">core</span>' : ''}</div><div class="l-desc">${l.d}</div></div><div class="l-prs">${sq}<span class="l-n">${l.p.length}</span></div></div>`;
+  });
+  box.innerHTML = html;
+  const rows = [...box.querySelectorAll('.layer:not(.off)')];
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  let i = -1, timer = null;
+  const tick = () => {
+    rows.forEach(r => r.classList.remove('lit'));
+    i = (i + 1) % (rows.length + 2);
+    if (i < rows.length) rows[i].classList.add('lit');
+  };
+  new IntersectionObserver(es => {
+    if (es[0].isIntersecting) { if (!timer) timer = setInterval(tick, 750); }
+    else { clearInterval(timer); timer = null; rows.forEach(r => r.classList.remove('lit')); i = -1; }
+  }, { threshold: 0.2 }).observe(box);
+})();
+</script>
+
 </body>
 </html>
